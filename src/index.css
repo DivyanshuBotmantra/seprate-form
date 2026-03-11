@@ -1,0 +1,632 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-table-text: var(--table-text);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --color-btn-upload: var(--btn-upload);
+  --font-mono: var(--font-geist-mono);
+  --color-login: var(--login-background);
+  --color-table-header: var(--table-header);
+  --color-table-bg: var(--table-background);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-table-header: var(--table-header);
+  --color-btn-primary: var(--btn-primary);
+  --color-footer: var(--footer-background);
+  --color-text-darkLight: var(--text-darkLight);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.65rem;
+  --background: #f7f7f7;
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: #4b4e50;
+  --table-text: rgb(0, 0, 0);
+  --table-header: #4b4e50;
+  --btn-primary: #f79524;
+  --btn-upload: #203864;
+  --text-darkLight: #ffffff;
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.623 0.214 259.815);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: #edeeef;
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.623 0.214 259.815);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --success: #92d050;
+  --danger: #ff5050;
+
+  /* Brandix Status Colors */
+  --status-total: #64748B;
+  --status-initiated: #3B82F6;
+  --status-in-progress: #F59E0B;
+  --status-succeeded: #22C55E;
+  --status-failed: #F43F5E;
+
+  /* Brandix Status Background Colors (for circles/indicators) */
+  --status-total-bg: #CBD5E1;
+  --status-initiated-bg: #BFDBFE;
+  --status-in-progress-bg: #FEF3C7;
+  --status-succeeded-bg: #BBF7D0;
+  --status-failed-bg: #FECDD3;
+
+  /* Brandix Chart UI */
+  --chart-grid: #E2E8F0;
+  --chart-axis: #64748B;
+  --chart-tooltip-bg: #0F172A;
+  --chart-tooltip-text: #FFFFFF;
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --table-text: rgb(255, 255, 255);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --btn-upload: #1e2a3a;
+  --primary: #b0b0b1;
+  --table-header: #b0b0b1;
+  --btn-primary: #f79524;
+  --text-darkLight: #0a0a0a;
+  --primary-foreground: oklch(0.379 0.146 265.522);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.488 0.243 264.376);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.546 0.245 262.881);
+  --sidebar-primary-foreground: oklch(0.379 0.146 265.522);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --success: #92d050;
+  --danger: #ff5050;
+  --sidebar-ring: oklch(0.488 0.243 264.376);
+
+  /* Brandix Status Colors (same as light mode for consistency) */
+  --status-total: #64748B;
+  --status-initiated: #3B82F6;
+  --status-in-progress: #F59E0B;
+  --status-succeeded: #22C55E;
+  --status-failed: #F43F5E;
+
+  /* Brandix Status Background Colors (darker for dark mode) */
+  --status-total-bg: #475569;
+  --status-initiated-bg: #1E40AF;
+  --status-in-progress-bg: #B45309;
+  --status-succeeded-bg: #166534;
+  --status-failed-bg: #9F1239;
+
+  /* Brandix Chart UI */
+  --chart-grid: #334155;
+  --chart-axis: #94A3B8;
+  --chart-tooltip-bg: #0F172A;
+  --chart-tooltip-text: #FFFFFF;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  @layer utilities {
+    .text-paragraph-light {
+      color: var(--paragraph-light);
+    }
+  }
+}
+
+.btn-try-me {
+  @apply px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition;
+}
+
+.avatar-button {
+  @apply flex items-center gap-2 rounded-lg p-1 hover:bg-muted/50 focus:outline-none;
+}
+
+@layer utilities {
+  .bg-card-theme {
+    background-color: var(--card-bg);
+    color: var(--card-foreground);
+  }
+
+  .input-theme {
+    border-color: var(--input-border);
+    color: var(--foreground);
+    background-color: white;
+  }
+
+  .scroll-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+  }
+
+  .scroll-container::-webkit-scrollbar-button {
+    display: none;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.4);
+  /* customize color */
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
+}
+
+/* ReactFlow Edge Reconnection Styles */
+.react-flow__edge.selected {
+  cursor: pointer;
+}
+
+.react-flow__edge:hover {
+  stroke: #555;
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #555;
+  stroke-width: 2;
+}
+
+/* Make sure the edge reconnect handles are visible */
+.react-flow__edge-button {
+  cursor: pointer;
+  fill: #fff;
+  stroke: #555;
+  stroke-width: 1;
+}
+
+.react-flow__edge-button:hover {
+  fill: #ccc;
+}
+
+.react-flow__edge-updateable .react-flow__edge-path {
+  cursor: pointer;
+  stroke-dasharray: 5;
+  animation: dash 0.5s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 10;
+  }
+}
+
+/* ===================== */
+/* HARD STOP OKLAB/OKLCH */
+/* ===================== */
+
+/* Hide scrollbars during PDF capture */
+html.pdf-export,
+html.pdf-export body,
+body.pdf-export {
+  overflow: hidden !important;
+  background: rgb(255, 255, 255) !important;
+}
+
+.pdf-export,
+.pdf-export * {
+  color: rgb(24, 24, 27) !important;
+  background-color: rgb(255, 255, 255) !important;
+  border-color: rgb(228, 228, 231) !important;
+
+  /* Kill Tailwind ring system */
+  --tw-ring-color: rgb(59, 130, 246) !important;
+  --tw-ring-offset-color: rgb(255, 255, 255) !important;
+
+  /* Kill shadows (often OKLAB-backed) */
+  box-shadow: none !important;
+
+  /* Prevent any outline parsing issues */
+  outline-color: currentColor !important;
+
+  /* Kill scrollbars */
+  scrollbar-width: none !important;
+}
+
+.pdf-export *::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Preserve charts & canvases colors */
+.pdf-export canvas,
+.pdf-export svg,
+.pdf-export .recharts-surface,
+.pdf-export .recharts-wrapper {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: unset !important;
+  filter: none !important;
+}
+
+/* Specific theme variable overrides for components that use them */
+body.pdf-export {
+  --background: rgb(255, 255, 255) !important;
+  --foreground: rgb(24, 24, 27) !important;
+  --card: rgb(255, 255, 255) !important;
+  --card-foreground: rgb(24, 24, 27) !important;
+  --border: rgb(228, 228, 231) !important;
+  --primary: rgb(75, 78, 80) !important;
+  --btn-primary: rgb(247, 149, 36) !important;
+  --status-total: rgb(100, 116, 139) !important;
+  --status-initiated: rgb(59, 130, 246) !important;
+  --status-in-progress: rgb(245, 158, 11) !important;
+  --status-succeeded: rgb(34, 197, 94) !important;
+  --status-failed: rgb(244, 63, 94) !important;
+}
+
+/* ===================== */
+/* PDF PERFECTION RULES */
+/* ===================== */
+
+/* ===== PDF LAYOUT FRAME ===== */
+.pdf-export {
+  width: 1280px !important;
+  /* match dashboard design */
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  padding: 16px !important;
+  background: #f5f6f8 !important;
+  /* same as app background */
+}
+
+/* ===== PDF HEADER ===== */
+.pdf-export>.bg-card:first-child,
+.pdf-export>div>.bg-card:first-child {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  margin-bottom: 12px !important;
+}
+
+/* Header alignment and spacing */
+.pdf-export>.bg-card:first-child>div,
+.pdf-export>div>.bg-card:first-child>div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+/* ===== HIDE TOGGLE BUTTONS IN PDF ===== */
+.pdf-export .bg-card:first-child .bg-sidebar {
+  display: none !important;
+}
+
+/* Title - make it prominent */
+.pdf-export h1 {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #18181b !important;
+}
+
+/* Header buttons - cleaner appearance */
+.pdf-export .bg-card:first-child button,
+.pdf-export .bg-card button[data-header-action] {
+  font-size: 11px !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  background: #f5f6f8 !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+/* Hide export dropdown and refresh in PDF */
+.pdf-export .bg-card:first-child button:has(svg[class*="chevron"]),
+.pdf-export .bg-card:first-child [role="button"]:last-child {
+  display: none !important;
+}
+
+/* Date filter - clean text display */
+.pdf-export .date-filter-text {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  background: #f9fafb !important;
+  padding: 4px 12px !important;
+  border-radius: 6px !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* ===== MAKE CONTROLS LOOK STATIC (PDF-STYLE) ===== */
+/* Disable interaction look */
+.pdf-export button {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* Remove hover/focus visuals */
+.pdf-export button:hover,
+.pdf-export button:focus {
+  background: inherit !important;
+  transform: none !important;
+}
+
+/* ===== CARD SPACING & GRID RHYTHM ===== */
+/* Card spacing - paper needs air */
+.pdf-export .bg-card {
+  margin-bottom: 16px !important;
+}
+
+/* Section spacing */
+.pdf-export .flex-col.gap-2 {
+  gap: 16px !important;
+}
+
+/* ===== STABILIZE CHART RENDERING ===== */
+.pdf-export canvas,
+.pdf-export svg {
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+/* Remove interactive-only elements for cleaner reports */
+.pdf-export [data-radix-menu-trigger],
+.pdf-export [data-radix-dropdown-trigger],
+.pdf-export .hover-only {
+  display: none !important;
+}
+
+/* ===== DATE FILTER PDF FIX ===== */
+.pdf-export [data-date-filter],
+.pdf-export .date-filter,
+.pdf-export .date-range {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 220px !important;
+  font-weight: 500 !important;
+}
+
+/* ===== TOP 5 BOT PERFORMANCE PDF FIX ===== */
+.pdf-export .top-bot-performance,
+.pdf-export .bot-list,
+.pdf-export .scroll-container {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+/* Component header - FAILURES/SUCCESSES toggle */
+.pdf-export .top-bot-performance .flex.items-center.gap-2,
+.pdf-export .top-bot-performance header {
+  margin-bottom: 12px !important;
+}
+
+/* Toggle buttons in Top 5 header */
+.pdf-export .top-bot-performance button {
+  font-size: 11px !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* List items - better spacing and layout */
+.pdf-export .top-bot-performance li,
+.pdf-export .top-bot-performance .row {
+  padding: 12px !important;
+  margin-bottom: 8px !important;
+  background: #fafafa !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+
+/* Bot names - allow wrapping for long names */
+.pdf-export .top-bot-performance .bot-name,
+.pdf-export .top-bot-performance li>div:first-child,
+.pdf-export .top-bot-performance li span:first-child {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  max-width: 65% !important;
+  line-height: 1.4 !important;
+  font-size: 11px !important;
+}
+
+/* Execution percentage text */
+.pdf-export .top-bot-performance .percentage,
+.pdf-export .top-bot-performance li>div:last-child,
+.pdf-export .top-bot-performance li span:last-child {
+  font-size: 10px !important;
+  color: #71717a !important;
+  white-space: nowrap !important;
+}
+
+/* Run count badge */
+.pdf-export .top-bot-performance .runs,
+.pdf-export .top-bot-performance [class*="runs"] {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  margin-left: auto !important;
+}
+
+/* Prevent column squeeze */
+.pdf-export .top-bot-performance * {
+  min-width: 0 !important;
+}
+
+/* ===== GRID SYMMETRY ===== */
+.pdf-export .grid {
+  align-items: stretch !important;
+}
+
+/* ===== COMPONENT CARDS - PROFESSIONAL STYLING ===== */
+.pdf-export .bg-card {
+  background: #ffffff !important;
+  border: 1.5px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  page-break-inside: avoid !important;
+}
+
+/* Component titles */
+.pdf-export .bg-card h3 {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  margin-bottom: 12px !important;
+}
+
+/* Component subtitles/descriptions */
+.pdf-export .bg-card p:first-of-type {
+  font-size: 10px !important;
+  color: #6b7280 !important;
+}
+
+/* ===== CHART LEGENDS - CLEANER APPEARANCE ===== */
+.pdf-export .recharts-legend-wrapper {
+  padding: 8px 0 !important;
+}
+
+.pdf-export .recharts-legend-item {
+  font-size: 10px !important;
+  margin-right: 12px !important;
+}
+
+.pdf-export .recharts-legend-item-text {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+/* ===== MACHINE LIST ENHANCEMENTS ===== */
+.pdf-export .bg-sidebar\/30 {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.pdf-export .bg-sidebar\/30:hover {
+  background: #f3f4f6 !important;
+}
+
+/* ===== TEXT HIERARCHY ===== */
+.pdf-export h1 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+.pdf-export h2 {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.pdf-export h3 {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+/* ===== CHART AXIS LABELS - BETTER READABILITY ===== */
+.pdf-export .recharts-cartesian-axis-tick text {
+  font-size: 10px !important;
+  fill: #6b7280 !important;
+}
+
+.pdf-export .recharts-label {
+  font-size: 11px !important;
+  fill: #374151 !important;
+  font-weight: 500 !important;
+}
