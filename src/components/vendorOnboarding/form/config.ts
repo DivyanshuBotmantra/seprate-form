@@ -126,26 +126,31 @@ export const FORMDATA_CONFIG = {
  * Helper to create the initial payload for Step 1
  */
 export const createInitialDraftPayload = (data: {
-    type_of_vendor: "XK01" | "FK01";
+    type_of_vendor: "XK01" | "FK01" | "Employee";
     name1: string;
     gstin?: string;
     pan_number: string;
+    vendor_account_group: string;
+    gstin_requirement: string;
+    employee_number?: string;
 }) => ({
     org_name: FORMDATA_CONFIG.ORG_NAME,
     form_name: FORMDATA_CONFIG.FORM_NAME,
     form_status: FORMDATA_CONFIG.STATUS_DRAFT,
     form_data: {
         ...VENDOR_FORM_DEFAULTS,
-        type_of_vendor: data.type_of_vendor,
+        type_of_vendor: data.type_of_vendor === 'Employee' ? 'FK01' : data.type_of_vendor,
         vendor_details: {
             ...VENDOR_FORM_DEFAULTS.vendor_details,
             name1: data.name1,
-            vendor_account_group: data.type_of_vendor === "XK01" ? "V001" : "V010",
+            vendor_account_group: data.vendor_account_group,
+            employee_number: data.employee_number || "",
         },
         key_details: {
             ...VENDOR_FORM_DEFAULTS.key_details,
             gstin: data.gstin || "",
             pan_number: data.pan_number,
+            gstin_requirement: data.gstin_requirement,
         },
     },
 });
@@ -155,7 +160,7 @@ export const createInitialDraftPayload = (data: {
  */
 export const REGEX = {
     PAN: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
-    GSTIN: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}Z[A-Z0-9]{1}$/,
+    GSTIN: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/,
     IFSC: /^[A-Z]{4}0[A-Z0-9]{6}$/,
     MSME: /^[A-Za-z]{2}-\d{2}-\d{7}$/,
     CIN_COMPANY: /^[LU][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/,
