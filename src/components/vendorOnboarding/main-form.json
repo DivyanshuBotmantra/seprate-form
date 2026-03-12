@@ -1,0 +1,132 @@
+{
+    "status_code": 200,
+    "status_description": "Success",
+    "error_message": "",
+    "response_body": [
+        {
+            "trans_id": "30fb445d-0a4e-4253-bce3-c3e1a8a9c6ea",
+            "org_name": "Rustomjee",
+            "form_name": "Vendor Onboarding",
+            "form_status": "Submitted",
+            "created_by": "divyanshu.srivastava@botmantra.com",
+            "created_on": "2026-01-27 00:19:25",
+            "updated_by": "divyanshu.srivastava@botmantra.com",
+            "updated_on": "2026-01-27 00:25:59",
+            "form_data": {
+                "form_id": "30fb445d-0a4e-4253-bce3-c3e1a8a9c6ea",
+                "form_submitted_by": "divyanshu.srivastava@botmantra.com",
+                "form_submitted_on": "2026-01-27 00:25:39",
+                "type_of_vendor": "XK01",
+                "vendor_details": {
+                    "vendor_account_group": "V007 - RUSTM-Foreign Vendor -Asset",
+                    "company_code": "1400",
+                    "title_text": "M/S",
+                    "name1": "Divyanshu Test",
+                    "terms_of_payment_key": "Y003",
+                    "employee_number": "",
+                    "search_term1": "Test",
+                    "name2": ""
+                },
+                "key_details": {
+                    "gstin": "",
+                    "pan_number": "NROPS8781N",
+                    "cin_number": "",
+                    "pan_aadhar_linked_status": "1",
+                    "credit_information_number_msme": "NA",
+                    "msme_status": "Z002",
+                    "gstin_requirement": "Not Registered"
+                },
+                "bank_details": {
+                    "bank_key_ifsc_code": "",
+                    "bank_account_number": "",
+                    "bank_country_key": "",
+                    "account_holder_name": "",
+                    "partner_bank_type": ""
+                },
+                "address_details": {
+                    "street": "Bla",
+                    "street2": "",
+                    "street3": "",
+                    "street4": "",
+                    "street5": "",
+                    "district": "",
+                    "city_postal_code": "565656",
+                    "city": "Basti",
+                    "country_key": "AI",
+                    "region": "0",
+                    "first_mobile_number_dialing_code_plus_number": "",
+                    "first_telephone_dialing_code_plus_number": "",
+                    "telephone_dialing_code_plus_number": "",
+                    "primary_email": "",
+                    "secondary_email": ""
+                },
+                "internal_details": {
+                    "reconciliation_account_in_general_ledger": "1000090060",
+                    "indicator_for_with_holding_tax_type1": "A6 - 194LD-INTEREST ON SECURITIES -INVOICE-CO",
+                    "planning_group": "O07",
+                    "indicator_for_with_holding_tax_type2": "",
+                    "purchasing_organization": "1000",
+                    "purchase_order_currency": "AFN",
+                    "responsible_sales_person_at_vendor_office": "",
+                    "order_acknowledgment_requirement": "Yes"
+                },
+                "system_fields": {
+                    "name3": ".",
+                    "name4": "NROPS8781N",
+                    "language": "EN",
+                    "address_time_zone": "INDIA",
+                    "last_review_external": "",
+                    "vendor_classification_for_gst": "0",
+                    "individual_pmt_check": "Yes",
+                    "check_flag_for_double_invoices_or_credit_memos": "Yes",
+                    "with_holding_tax_country_key": "IN",
+                    "with_holding_tax_code1": "A6 - 194LD-INTEREST ON SECURITIES -INVOICE-CO",
+                    "indicator_subject_to_with_hold_tax1": "Yes",
+                    "type_of_recipient1": "CO",
+                    "with_holding_tax_code2": "",
+                    "indicator_subject_to_with_hold_tax2": "No",
+                    "type_of_recipient2": "",
+                    "indicator_gr_based_invoice_verification": "Yes",
+                    "indicator_for_service_based_invoice_verification": "Yes",
+                    "key_for_sorting_according_to_assignment_number": "001",
+                    "list_of_payment_methods_to_be_considered": "CEMNORT",
+                    "group_for_calculation_schema_vendor": "04",
+                    "confirmation_control_key": "0001"
+                },
+                "attachments": {
+                    "gstin_attachment": {
+                        "file_url": "",
+                        "file_name": "",
+                        "file_type": ""
+                    },
+                    "pan_attachment": {
+                        "file_name": "samplepdf_20260127_002347_790_fe57b4b92c85.pdf",
+                        "file_type": "application/pdf",
+                        "file_url": "https://botiqblobuat.blob.core.windows.net/botiq-uat/bm_forms_uat/permanent_storage/30fb445d-0a4e-4253-bce3-c3e1a8a9c6ea/samplepdf_20260127_002347_790_fe57b4b92c85.pdf?sp=racwdl&st=2025-12-26T11:15:48Z&se=2029-12-30T19:30:48Z&sv=2024-11-04&sr=c&sig=P4H4ZZD0mZAyLetNhACykmf%2FkFzF9bTzpSmpZOgM1Qo%3D"
+                    },
+                    "cin_attachment": {
+                        "file_url": "",
+                        "file_name": "",
+                        "file_type": ""
+                    },
+                    "msme_attachment": {
+                        "file_url": "",
+                        "file_name": "",
+                        "file_type": ""
+                    },
+                    "pan_aadhar_linkage_attachment": {
+                        "file_name": "samplepdf_20260127_002535_124_a32284d632aa.pdf",
+                        "file_type": "application/pdf",
+                        "file_url": "https://botiqblobuat.blob.core.windows.net/botiq-uat/bm_forms_uat/permanent_storage/30fb445d-0a4e-4253-bce3-c3e1a8a9c6ea/samplepdf_20260127_002535_124_a32284d632aa.pdf?sp=racwdl&st=2025-12-26T11:15:48Z&se=2029-12-30T19:30:48Z&sv=2024-11-04&sr=c&sig=P4H4ZZD0mZAyLetNhACykmf%2FkFzF9bTzpSmpZOgM1Qo%3D"
+                    },
+                    "bank_details_attachment": {
+                        "file_url": "",
+                        "file_name": "",
+                        "file_type": ""
+                    },
+                    "other_attachments": []
+                }
+            }
+        }
+    ]
+}

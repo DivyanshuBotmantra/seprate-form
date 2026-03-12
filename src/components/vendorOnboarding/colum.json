@@ -1,0 +1,39 @@
+{
+    "status_code": 200,
+    "status_description": "Success",
+    "error_message": "",
+    "response_body": [
+        {
+            "trans_id": "30fb445d-0a4e-4253-bce3-c3e1a8a9c6ea",
+            "org_name": "Rustomjee",
+            "form_name": "Vendor Onboarding",
+            "form_status": "Submitted",
+            "created_by": "divyanshu.srivastava@botmantra.com",
+            "created_on": "2026-01-27 00:19:25",
+            "updated_by": "divyanshu.srivastava@botmantra.com",
+            "updated_on": "2026-01-27 00:25:59",
+            "form_data": {
+                "type_of_vendor": "XK01",
+                "vendor_details": {
+                    "vendor_account_group": "V007 - RUSTM-Foreign Vendor -Asset",
+                    "company_code": "1400",
+                    "title_text": "M/S",
+                    "name1": "Divyanshu Test",
+                    "terms_of_payment_key": "Y003",
+                    "employee_number": "",
+                    "search_term1": "Test",
+                    "name2": ""
+                },
+                "key_details": {
+                    "gstin": "",
+                    "pan_number": "NROPS8781N",
+                    "cin_number": "",
+                    "pan_aadhar_linked_status": "1",
+                    "credit_information_number_msme": "NA",
+                    "msme_status": "Z002",
+                    "gstin_requirement": "Not Registered"
+                }
+            }
+        }
+    ]
+}

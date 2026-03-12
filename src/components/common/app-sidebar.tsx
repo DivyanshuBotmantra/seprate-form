@@ -62,7 +62,7 @@ interface SidebarMenuData {
     form_code: string;
     form_name: string;
     form_category: string;
-    form_url: string;
+    form_url?: string | null;
     sidebar_visibility?: boolean | null;
   }>;
   org_dashboard?: Array<{
@@ -276,15 +276,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Build form menu items from session storage, grouped by category
   // Only display forms where sidebar_visibility is true
   const buildFormMenuItems = React.useMemo(() => {
-    if (
-      !sidebarMenuData?.form_menu_list ||
-      sidebarMenuData.form_menu_list.length === 0
-    ) {
-      return [];
+    let forms = sidebarMenuData?.form_menu_list ? [...sidebarMenuData.form_menu_list] : [];
+
+    // Add Vendor Onboarding form if not present in the list (requested as a new route)
+    const hasVendorOnboarding = forms.some(
+      (form) => form.form_code === "VENDOR_001"
+    );
+
+    if (!hasVendorOnboarding) {
+      forms.push({
+        form_code: "VENDOR_001",
+        form_name: "Vendor Onboarding",
+        form_category: "GENERAL",
+        form_url: "/vendor-onboarding",
+        sidebar_visibility: true,
+      });
     }
 
     // Filter: only show forms with sidebar_visibility === true
-    const visibleForms = sidebarMenuData.form_menu_list.filter(
+    const visibleForms = forms.filter(
       (form) => form.sidebar_visibility === true
     );
 
@@ -309,14 +319,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "#",
       icon: ClipboardList,
       isActive: true,
-      items: forms.map((form) => ({
-        title: form.form_name,
-        url: `/form-log?form_code=${encodeURIComponent(
-          form.form_code
-        )}&form_name=${encodeURIComponent(
-          form.form_name
-        )}&form_category=${encodeURIComponent(form.form_category)}`,
-      })),
+      items: forms.map((form) => {
+        // Redirect "Vendor Onboarding" to /form-data as requested
+        const isVendorOnboarding =
+          form.form_code === "VENDOR_001" ||
+          form.form_name === "Vendor Onboarding";
+
+        const url = isVendorOnboarding
+          ? `/vendor-onboarding?formName=${encodeURIComponent(form.form_name)}`
+          : `/form-log?form_code=${encodeURIComponent(
+              form.form_code
+            )}&form_name=${encodeURIComponent(
+              form.form_name
+            )}&form_category=${encodeURIComponent(form.form_category)}`;
+
+        return {
+          title: form.form_name,
+          url,
+        };
+      }),
     }));
   }, [sidebarMenuData?.form_menu_list]);
 

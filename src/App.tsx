@@ -35,6 +35,7 @@ import NewDashboard from "./components/top-dash/NewDashboard";
 import DynamicOrgExecutionPages from "./pages/dynamic-org-pages";
 import DynamicFormPage from "./pages/dynamic-form-page";
 import DynamicCatoPage from "./pages/dynamic-cato-page";
+import VendorOnboarding from "./pages/vendorOnboarding/Vendor-onboarding-table";
 
 const App = () => {
   return (
@@ -51,6 +52,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <NewDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor-onboarding"
+            element={
+              <ProtectedRoute>
+                <VendorOnboarding />
               </ProtectedRoute>
             }
           />

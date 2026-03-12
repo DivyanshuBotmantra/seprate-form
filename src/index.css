@@ -52,6 +52,16 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-status-total: var(--status-total);
+  --color-status-initiated: var(--status-initiated);
+  --color-status-in-progress: var(--status-in-progress);
+  --color-status-succeeded: var(--status-succeeded);
+  --color-status-failed: var(--status-failed);
+  --color-status-total-bg: var(--status-total-bg);
+  --color-status-initiated-bg: var(--status-initiated-bg);
+  --color-status-in-progress-bg: var(--status-in-progress-bg);
+  --color-status-succeeded-bg: var(--status-succeeded-bg);
+  --color-status-failed-bg: var(--status-failed-bg);
 }
 
 :root {

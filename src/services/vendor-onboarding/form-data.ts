@@ -1,14 +1,78 @@
-import { AxiosError } from "axios";
-import { formApi} from "@/services/api";
+import axios, { AxiosError } from "axios";
+import { formApi } from "@/services/api";
+
 type APIResponse<T> = { data: T | null; error: string | null };
 
+const BASE_URL = "https://botiq-form-uat-drgpftbwbnbjd2fb.centralindia-01.azurewebsites.net/api";
 
-const getFormDataApi  = async (data: any): Promise<APIResponse<any>> => {
+const COMMON_HEADERS = {
+    "Content-Type": "application/json",
+    "request_type": "application/json",
+};
+
+/**
+ * Fetches the specific JWT token for the form data environment.
+ */
+const getFormAuthToken = async (): Promise<string | null> => {
     try {
-        const response = await formApi.post("https://botiq-form-uat-drgpftbwbnbjd2fb.centralindia-01.azurewebsites.net/api/get_form_data_api", data);
+        const payload = {
+            "user_id": "divyanshu.srivastava@botmantra.com",
+            "password": "Welcome@123"
+        };
+        const response = await axios.post(`${BASE_URL}/validate_user_admin_api`, payload, {
+            headers: COMMON_HEADERS
+        });
+        
+        const token = response.data?.response_body?.authorize_token || response.data?.token;
+        
+        if (token) {
+            sessionStorage.setItem("form_token", token);
+            return token;
+        }
+    } catch (err) {
+        console.error("Failed to authenticate with form data API:", err);
+    }
+    return null;
+};
+
+/**
+ * Helper to make authenticated POST requests specifically for form data endpoints.
+ * Handles token injection and 401 retries.
+ */
+const callFormApi = async (endpoint: string, data: any): Promise<APIResponse<any>> => {
+    const makeRequest = async () => {
+        let token = sessionStorage.getItem("form_token");
+        if (!token) {
+            token = await getFormAuthToken();
+        }
+        return await formApi.post(`${BASE_URL}${endpoint}`, data, {
+            headers: { 
+                ...COMMON_HEADERS,
+                "authorize_token": token || "",
+            }
+        });
+    };
+
+    try {
+        const response = await makeRequest();
         return { data: response.data, error: null };
     } catch (err) {
-        let errorMessage = "Failed to retrieve form data.";
+        if (err instanceof AxiosError && err.response?.status === 401) {
+            // Token is likely invalid or expired, try to refresh once
+            sessionStorage.removeItem("form_token");
+            try {
+                const response = await makeRequest();
+                return { data: response.data, error: null };
+            } catch (retryErr) {
+                let retryMessage = "Authentication failed for form data.";
+                if (retryErr instanceof AxiosError) {
+                    retryMessage = retryErr.response?.data?.error_message || retryErr.message;
+                }
+                return { data: null, error: retryMessage };
+            }
+        }
+        
+        let errorMessage = "Failed to process form data request.";
         if (err instanceof AxiosError) {
             errorMessage = err.response?.data?.error_message || err.message;
         }
@@ -16,45 +80,18 @@ const getFormDataApi  = async (data: any): Promise<APIResponse<any>> => {
     }
 };
 
-
-
-const createFormDataApi  = async (data: any): Promise<APIResponse<any>> => {
-    try {
-        const response = await formApi.post("", data);
-        return { data: response.data, error: null };
-    } catch (err) {
-        let errorMessage = "Failed to create Form data.";
-        if (err instanceof AxiosError) {
-            errorMessage = err.response?.data?.error_message || err.message;
-        }
-        return { data: null, error: errorMessage };
-    }
-};
-const updateFormDataApi  = async (data: any): Promise<APIResponse<any>> => {
-    try {
-        const response = await formApi.post("", data);
-        return { data: response.data, error: null };
-    } catch (err) {
-        let errorMessage = "Failed to create Form data.";
-        if (err instanceof AxiosError) {
-            errorMessage = err.response?.data?.error_message || err.message;
-        }
-        return { data: null, error: errorMessage };
-    }
+export const getFormData = async (data: any): Promise<APIResponse<any>> => {
+    return callFormApi("/get_form_data_api", data);
 };
 
-const deleteFormData = async (data: any): Promise<APIResponse<any>> => {
-    try {
-        const response = await formApi.post("", data);
-        return { data: response.data, error: null };
-    } catch (err) {
-        let errorMessage = "Failed to create Form data.";
-        if (err instanceof AxiosError) {
-            errorMessage = err.response?.data?.error_message || err.message;
-        }
-        return { data: null, error: errorMessage };
-    }
+export const createFormData = async (data: any): Promise<APIResponse<any>> => {
+    return callFormApi("/create_form_data_api", data);
 };
 
-export default {getFormDataApi, createFormDataApi, updateFormDataApi, deleteFormData}
+export const updateFormData = async (data: any): Promise<APIResponse<any>> => {
+    return callFormApi("/update_form_data_api", data);
+};
 
+export const deleteFormData = async (data: any): Promise<APIResponse<any>> => {
+    return callFormApi("/delete_form_data_api", data);
+};
