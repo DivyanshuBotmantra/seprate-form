@@ -3,9 +3,12 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescripti
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { VendorFormValues } from "../schema";
+import { useLOVData } from "../LOVContext";
 
 const KeyDetails = () => {
     const { control, watch } = useFormContext<VendorFormValues>();
+    const { lovData } = useLOVData();
+    
     const pan = watch("key_details.pan_number");
     const fourthChar = pan?.[3]?.toUpperCase();
     const isCompany = fourthChar === 'C';
@@ -64,16 +67,16 @@ const KeyDetails = () => {
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>MSME Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="Z001">Micro</SelectItem>
-                                <SelectItem value="Z002">Small</SelectItem>
-                                <SelectItem value="Z003">Medium</SelectItem>
+                                {(lovData?.reMSMEStatus || []).map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
                                 <SelectItem value="NA">Non-MSME</SelectItem>
                             </SelectContent>
                         </Select>

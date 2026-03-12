@@ -3,9 +3,11 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { VendorFormValues } from "../schema";
+import { useLOVData } from "../LOVContext";
 
 const VendorDetails = () => {
     const { control } = useFormContext<VendorFormValues>();
+    const { lovData } = useLOVData();
 
     return (
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -45,17 +47,16 @@ const VendorDetails = () => {
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Vendor Account Group *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select group" />
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="V001">V001 - Domestic Material</SelectItem>
-                                <SelectItem value="V002">V002 - Foreign Material</SelectItem>
-                                <SelectItem value="V010">V010 - Employee</SelectItem>
-                                <SelectItem value="V007">V007 - Foreign Asset</SelectItem>
+                                {(lovData?.vendorAccountGroup || []).map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -69,9 +70,18 @@ const VendorDetails = () => {
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Company Code *</FormLabel>
-                        <FormControl>
-                            <Input placeholder="e.g. 1000" {...field} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select code" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {(lovData?.companyCode || []).map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -83,9 +93,18 @@ const VendorDetails = () => {
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Terms of Payment *</FormLabel>
-                        <FormControl>
-                            <Input placeholder="e.g. Y001" {...field} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select terms" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {(lovData?.termsOfPaymentKey || []).map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                         <FormMessage />
                     </FormItem>
                 )}

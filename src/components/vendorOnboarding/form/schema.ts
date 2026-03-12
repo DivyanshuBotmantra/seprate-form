@@ -100,6 +100,9 @@ export const vendorFormSchema = z.object({
     internal_details: z.object({
         reconciliation_account_in_general_ledger: z.string().min(1, "Reconciliation Account is required"),
         indicator_for_with_holding_tax_type1: z.string().optional(),
+        receipt_type1: z.string().optional(),
+        indicator_for_with_holding_tax_type2: z.string().optional(),
+        receipt_type2: z.string().optional(),
         planning_group: z.string().optional(),
         purchasing_organization: z.string().optional(),
         purchase_order_currency: z.string().min(1, "Currency is required"),

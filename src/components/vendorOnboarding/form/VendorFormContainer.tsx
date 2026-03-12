@@ -9,8 +9,9 @@ import { Card } from "@/components/ui/card";
 import { Loader2, Save, Send } from "lucide-react";
 
 import { vendorFormSchema, type VendorFormValues } from "./schema";
-import { VENDOR_FORM_DEFAULTS } from "./config";
+import { VENDOR_FORM_DEFAULTS, FORMDATA_CONFIG } from "./config";
 import { getFormData, updateFormData } from "@/services/vendor-onboarding/form-data";
+import { useVendorDataLoader } from "../hooks/useVendorDataLoader";
 
 import TypeOfVendor from "./sections/TypeOfVendor";
 import VendorDetails from "./sections/VendorDetails";
@@ -19,14 +20,26 @@ import AddressDetails from "./sections/AddressDetails";
 import BankDetails from "./sections/BankDetails";
 import InternalDetails from "./sections/InternalDetails";
 import SystemFields from "./sections/SystemFields";
+import Attachments from "./sections/Attachments";
+
+import { LOVProvider } from "./LOVContext";
+
+import { useFormDependencies } from "../hooks/useFormDependencies";
+
+const FormLogic = () => {
+    useFormDependencies();
+    return null;
+};
 
 const VendorFormContainer = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const transId = searchParams.get("transId");
     const mode = searchParams.get("mode") || "edit";
-    const [loading, setLoading] = useState(!!transId);
     const [activeTab, setActiveTab] = useState("type");
+
+    // Load LOVs and form metadata
+    const { lovData, isLoadingLov } = useVendorDataLoader();
 
     const methods = useForm<VendorFormValues>({
         resolver: zodResolver(vendorFormSchema),
@@ -36,14 +49,16 @@ const VendorFormContainer = () => {
 
     const { handleSubmit, reset, formState: { errors, isSubmitting } } = methods;
 
+    const [loading, setLoading] = useState(!!transId);
+
     // Load existing data if transId is present
     useEffect(() => {
         if (transId) {
             const loadData = async () => {
                 setLoading(true);
                 const { data, error } = await getFormData({
-                    org_name: "Rustomjee",
-                    form_name: "Vendor Onboarding",
+                    org_name: FORMDATA_CONFIG.ORG_NAME,
+                    form_name: FORMDATA_CONFIG.FORM_NAME,
                     search_params: { trans_id: transId }
                 });
 
@@ -64,7 +79,7 @@ const VendorFormContainer = () => {
             const payload = {
                 search_fields: {
                     transaction_id: transId,
-                    org_name: "Rustomjee"
+                    org_name: FORMDATA_CONFIG.ORG_NAME
                 },
                 update_fields: {
                     form_status: status,
@@ -91,70 +106,74 @@ const VendorFormContainer = () => {
     // Error Focus Protocol
     useEffect(() => {
         if (Object.keys(errors).length > 0) {
-            const firstErrorField = Object.keys(errors)[0];
             toast.error("Please fix errors in the form before submitting.");
-            console.log("First error in:", firstErrorField);
-            // logic to scroll and focus can go here or inside tab content
         }
     }, [errors]);
 
-    if (loading) {
+    if (loading || isLoadingLov) {
         return (
             <div className="h-[60vh] flex flex-col items-center justify-center">
                 <Loader2 className="h-10 w-10 animate-spin text-primary opacity-50 mb-4" />
-                <p className="text-muted-foreground animate-pulse">Loading form data...</p>
+                <p className="text-muted-foreground animate-pulse">
+                    {isLoadingLov ? "Fetching form options..." : "Loading vendor data..."}
+                </p>
             </div>
         );
     }
 
     return (
-        <FormProvider {...methods}>
-            <div className="max-w-7xl mx-auto space-y-6 pb-20">
-                <div className="flex items-center justify-between px-4">
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">
-                            {mode === "view" ? "View Vendor Details" : transId ? "Edit Vendor Registration" : "New Vendor Registration"}
-                        </h1>
-                        <p className="text-sm text-muted-foreground">
-                            {transId ? `Transaction ID: ${transId}` : "Fill out the details to register a new vendor"}
-                        </p>
+        <LOVProvider lovData={lovData} isLoading={isLoadingLov}>
+            <FormProvider {...methods}>
+                <FormLogic />
+                <div className="max-w-7xl mx-auto space-y-6 pb-20">
+                    <div className="flex items-center justify-between px-4">
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                {mode === "view" ? "View Vendor Details" : transId ? "Edit Vendor Registration" : "New Vendor Registration"}
+                            </h1>
+                            <p className="text-sm text-muted-foreground">
+                                {transId ? `Transaction ID: ${transId}` : "Fill out the details to register a new vendor"}
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <Button variant="outline" onClick={() => handleSubmit((val) => onSubmit(val, "Draft"))()} disabled={isSubmitting}>
+                                <Save className="mr-2 h-4 w-4" /> Save Draft
+                            </Button>
+                            <Button onClick={handleSubmit((val) => onSubmit(val, "Submitted"))} disabled={isSubmitting}>
+                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                Submit Form
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex gap-3">
-                        <Button variant="outline" onClick={() => handleSubmit((val) => onSubmit(val, "Draft"))()} disabled={isSubmitting}>
-                            <Save className="mr-2 h-4 w-4" /> Save Draft
-                        </Button>
-                        <Button onClick={handleSubmit((val) => onSubmit(val, "Submitted"))} disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                            Submit Form
-                        </Button>
-                    </div>
-                </div>
 
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-7 h-12 bg-muted/50 p-1">
-                        <TabsTrigger value="type" className="rounded-md">1. Vendor Type</TabsTrigger>
-                        <TabsTrigger value="details" className="rounded-md">2. Details</TabsTrigger>
-                        <TabsTrigger value="key" className="rounded-md">3. Key IDs</TabsTrigger>
-                        <TabsTrigger value="address" className="rounded-md">4. Address</TabsTrigger>
-                        <TabsTrigger value="bank" className="rounded-md">5. Banking</TabsTrigger>
-                        <TabsTrigger value="internal" className="rounded-md">6. Internal</TabsTrigger>
-                        <TabsTrigger value="system" className="rounded-md">7. System</TabsTrigger>
-                    </TabsList>
-                    
-                    <div className="mt-6">
-                        <Card className="border-border/50 shadow-sm overflow-hidden">
-                            <TabsContent value="type"><TypeOfVendor /></TabsContent>
-                            <TabsContent value="details"><VendorDetails /></TabsContent>
-                            <TabsContent value="key"><KeyDetails /></TabsContent>
-                            <TabsContent value="address"><AddressDetails /></TabsContent>
-                            <TabsContent value="bank"><BankDetails /></TabsContent>
-                            <TabsContent value="internal"><InternalDetails /></TabsContent>
-                            <TabsContent value="system"><SystemFields /></TabsContent>
-                        </Card>
-                    </div>
-                </Tabs>
-            </div>
-        </FormProvider>
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                            <TabsList className="grid w-full grid-cols-8 h-12 bg-muted/50 p-1">
+                                <TabsTrigger value="type" className="rounded-md">1. Type</TabsTrigger>
+                                <TabsTrigger value="details" className="rounded-md">2. Details</TabsTrigger>
+                                <TabsTrigger value="key" className="rounded-md">3. Key IDs</TabsTrigger>
+                                <TabsTrigger value="address" className="rounded-md">4. Address</TabsTrigger>
+                                <TabsTrigger value="bank" className="rounded-md">5. Banking</TabsTrigger>
+                                <TabsTrigger value="internal" className="rounded-md">6. Internal</TabsTrigger>
+                                <TabsTrigger value="system" className="rounded-md">7. System</TabsTrigger>
+                                <TabsTrigger value="attachments" className="rounded-md">8. Files</TabsTrigger>
+                            </TabsList>
+                            
+                            <div className="mt-6">
+                                <Card className="border-border/50 shadow-sm overflow-hidden">
+                                    <TabsContent value="type"><TypeOfVendor /></TabsContent>
+                                    <TabsContent value="details"><VendorDetails /></TabsContent>
+                                    <TabsContent value="key"><KeyDetails /></TabsContent>
+                                    <TabsContent value="address"><AddressDetails /></TabsContent>
+                                    <TabsContent value="bank"><BankDetails /></TabsContent>
+                                    <TabsContent value="internal"><InternalDetails /></TabsContent>
+                                    <TabsContent value="system"><SystemFields /></TabsContent>
+                                    <TabsContent value="attachments"><Attachments /></TabsContent>
+                                </Card>
+                            </div>
+                    </Tabs>
+                </div>
+            </FormProvider>
+        </LOVProvider>
     );
 };
 

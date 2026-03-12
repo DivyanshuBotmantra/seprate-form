@@ -95,3 +95,8 @@ export const updateFormData = async (data: any): Promise<APIResponse<any>> => {
 export const deleteFormData = async (data: any): Promise<APIResponse<any>> => {
     return callFormApi("/delete_form_data_api", data);
 };
+
+export const getFormLovs = async (data: { form_name: string; org_name: string }): Promise<APIResponse<any>> => {
+    return callFormApi("/get_lov_form_admin_api", data);
+};
+

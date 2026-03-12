@@ -45,6 +45,9 @@ export const VENDOR_FORM_DEFAULTS: Partial<VendorFormValues> = {
     internal_details: {
         reconciliation_account_in_general_ledger: "",
         indicator_for_with_holding_tax_type1: "",
+        receipt_type1: "",
+        indicator_for_with_holding_tax_type2: "",
+        receipt_type2: "",
         planning_group: "",
         purchasing_organization: "",
         purchase_order_currency: "INR",
