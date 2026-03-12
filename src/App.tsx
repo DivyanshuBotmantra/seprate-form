@@ -36,6 +36,8 @@ import DynamicOrgExecutionPages from "./pages/dynamic-org-pages";
 import DynamicFormPage from "./pages/dynamic-form-page";
 import DynamicCatoPage from "./pages/dynamic-cato-page";
 import VendorOnboarding from "./pages/vendorOnboarding/Vendor-onboarding-table";
+import VendorFormStep1 from "./pages/vendorOnboarding/VendorFormStep1";
+import VendorFormPage from "./pages/vendorOnboarding/VendorFormPage";
 
 const App = () => {
   return (
@@ -60,6 +62,30 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <VendorOnboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor-form-step1"
+            element={
+              <ProtectedRoute>
+                <VendorFormStep1 />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor-form"
+            element={
+              <ProtectedRoute>
+                <VendorFormPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor-view"
+            element={
+              <ProtectedRoute>
+                <VendorFormPage />
               </ProtectedRoute>
             }
           />
