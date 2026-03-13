@@ -92,7 +92,7 @@ const VendorFormStep1 = () => {
 
     const form = useForm<Step1Values>({
         resolver: zodResolver(step1Schema),
-        mode: "onTouched",
+        mode: "onSubmit", // Validation only triggers on "Next" click
         reValidateMode: "onChange",
         defaultValues: {
             type_of_vendor: "XK01",
@@ -129,21 +129,45 @@ const VendorFormStep1 = () => {
         loadLOVs();
     }, []);
 
-    // Logic: If Vendor Type is Employee -> Auto-select V010 and set Not Registered
+    // Logic: Default settings based on Vendor Type (Group, GSTIN Requirement, etc.)
     useEffect(() => {
-        if (typeOfVendor === "Employee") {
-            const v010 = lovData?.vendorAccountGroup.find(o => o.value.includes("V010"))?.value || "V010";
-            setValue("vendor_account_group", v010, { shouldValidate: true });
-            setValue("gstin_requirement", "Not Registered");
-            setValue("gstin", "");
-            form.clearErrors(["vendor_account_group", "gstin_requirement", "gstin"]);
-        } else {
-            setValue("vendor_account_group", "");
-            setValue("gstin_requirement", "Registered");
-            setValue("gstin", "");
-            form.clearErrors(["vendor_account_group", "gstin_requirement", "gstin"]);
-        }
-    }, [typeOfVendor, lovData, setValue]);
+        if (!typeOfVendor) return;
+
+        // Instantly clear ALL validation errors when type changes to reset form state
+        form.clearErrors();
+
+        // Use a small timeout to let form state stabilize and conditional renders complete
+        const timer = setTimeout(() => {
+            if (typeOfVendor === "Employee") {
+                // 1. Set Employee Vendor Group
+                const v010 = lovData?.vendorAccountGroup.find(o => o.value.includes("V010"))?.value || "V010";
+                if (form.getValues("vendor_account_group") !== v010) {
+                    setValue("vendor_account_group", v010, { shouldValidate: false, shouldDirty: true, shouldTouch: true });
+                }
+
+                // 2. Set GSTIN Requirement to Not Registered
+                setValue("gstin_requirement", "Not Registered", { shouldValidate: false, shouldDirty: true, shouldTouch: true });
+
+                // 3. Clear name and GSTIN for a clean start
+                setValue("name1", "", { shouldValidate: false, shouldDirty: false });
+                setValue("gstin", "", { shouldValidate: false, shouldDirty: false });
+            } else if (typeOfVendor === "XK01" || typeOfVendor === "FK01") {
+                // 1. Set GSTIN Requirement to Registered
+                setValue("gstin_requirement", "Registered", { shouldValidate: false, shouldDirty: true, shouldTouch: true });
+
+                // 2. Reset fields to ensure a clean state
+                setValue("vendor_account_group", "", { shouldValidate: false, shouldDirty: false });
+                setValue("name1", "", { shouldValidate: false, shouldDirty: false });
+                setValue("gstin", "", { shouldValidate: false, shouldDirty: false });
+                setValue("pan_number", "", { shouldValidate: false, shouldDirty: false });
+            }
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, [typeOfVendor, lovData, setValue, form]);
+
+
+
 
     // Logic: Auto-extract PAN from GSTIN
     useEffect(() => {
@@ -205,254 +229,257 @@ const VendorFormStep1 = () => {
 
     return (
         <div className="flex flex-col h-[calc(100vh-4rem)] md:h-screen bg-background overflow-hidden relative">
-            {/* Header */}
-            <div className="bg-primary border-b border-border px-4 md:px-6 py-3 flex-shrink-0">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 md:gap-3">
-                        <div onClick={() => navigate(-1)} className="text-muted-foreground hover:cursor-pointer transition-colors">
-                            <ChevronLeft className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <h1 className="text-sm md:text-lg lg:text-xl text-primary-foreground uppercase tracking-widest font-semibold">
-                                STEP 1: PRIMARY VENDOR DETAILS
-                            </h1>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.error("Form Validation Errors:", errors))} id="vendor-step1-form" className="flex flex-col h-full overflow-hidden">
+                    {/* Header */}
+                    <div className="bg-primary border-b border-border px-4 md:px-6 py-3 flex-shrink-0">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 md:gap-3">
+                                <div onClick={() => navigate(-1)} className="text-muted-foreground hover:cursor-pointer transition-colors">
+                                    <ChevronLeft className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-sm md:text-lg lg:text-xl text-primary-foreground uppercase tracking-widest font-semibold">
+                                        STEP 1: PRIMARY VENDOR DETAILS
+                                    </h1>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {/* Form Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar bg-background">
-                <div className="p-4 md:p-6 pb-20 max-w-7xl mx-auto space-y-6">
-                    <div className="bg-card rounded-lg border shadow-sm p-4 md:p-6">
-                        <div className="mb-4 md:mb-6">
-                            <h2 className="text-base md:text-lg font-semibold text-card-foreground mb-1 md:mb-2">
-                                Primary Vendor Information
-                            </h2>
-                            <p className="text-xs md:text-sm text-muted-foreground">
-                                Enter the essential vendor details to get started. All fields are required.
-                            </p>
-                        </div>
+                    {/* Form Content */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-background">
+                        <div className="p-4 md:p-6 pb-20 max-w-7xl mx-auto space-y-6">
+                            <div className="bg-card rounded-lg border shadow-sm p-4 md:p-6">
+                                <div className="mb-4 md:mb-6">
+                                    <h2 className="text-base md:text-lg font-semibold text-card-foreground mb-1 md:mb-2">
+                                        Primary Vendor Information
+                                    </h2>
+                                    <p className="text-xs md:text-sm text-muted-foreground">
+                                        Enter the essential vendor details to get started. All fields are required.
+                                    </p>
+                                </div>
 
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex flex-col">
-                                {/* Type of Vendor - Radio Buttons */}
-                                <FormField
-                                    control={form.control}
-                                    name="type_of_vendor"
-                                    render={({ field }) => (
-                                        <FormItem className="space-y-3 mb-4">
-                                            <FormLabel className="block font-medium text-base text-foreground">
-                                                Type of Vendor <span className="text-destructive">*</span>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <RadioGroup
-                                                    onValueChange={field.onChange}
-                                                    value={field.value}
-                                                    className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 w-full justify-start"
-                                                >
-                                                    {[
-                                                        { id: "employee", label: "Employee", val: "Employee" },
-                                                        { id: "purchase", label: "Vendor Purchase Org", val: "XK01" },
-                                                        { id: "direct", label: "Direct FI Vendor", val: "FK01" }
-                                                    ].map(opt => (
-                                                        <div key={opt.id} className="flex">
-                                                            <label
-                                                                htmlFor={opt.id}
-                                                                className={`flex items-center space-x-3 px-4 py-3 rounded-lg border cursor-pointer w-full transition-all duration-300 ${field.value === opt.val ? "bg-primary/5 border-primary ring-1 ring-primary/20 shadow-md scale-[1.02]" : "bg-card border-border hover:border-primary/20"}`}
-                                                            >
-                                                                <RadioGroupItem value={opt.val} id={opt.id} className="h-4 w-4 border-2 outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" />
-                                                                <span className="text-xs sm:text-sm font-medium cursor-pointer text-foreground">{opt.label}</span>
-                                                            </label>
-                                                        </div>
-                                                    ))}
-                                                </RadioGroup>
-                                            </FormControl>
-                                            <FormMessage className="text-[10px]" />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Dual Column Layout EXACTLY like old grid */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-
-                                    {/* Row 1, Col 1: Vendor Account Group */}
+                                <div className="space-y-6 flex flex-col">
+                                    {/* Type of Vendor - Radio Buttons */}
                                     <FormField
                                         control={form.control}
-                                        name="vendor_account_group"
+                                        name="type_of_vendor"
                                         render={({ field }) => (
-                                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                <FormLabel className="block font-medium text-foreground">Vendor Account Group <span className="text-destructive">*</span></FormLabel>
-                                                <Select onValueChange={(val) => {
-                                                    field.onChange(val);
-                                                    form.clearErrors("vendor_account_group");
-                                                }} value={field.value} disabled={typeOfVendor === "Employee"}>
-                                                    <FormControl>
-                                                        <SelectTrigger className={`w-full h-10 focus:ring-1 focus:ring-primary text-[13px] font-semibold ${typeOfVendor === "Employee" ? "bg-muted text-muted-foreground" : "bg-background border-border"}`}>
-                                                            <SelectValue placeholder="Choose vendor group" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {(lovData?.vendorAccountGroup || [])
-                                                            .filter(opt => typeOfVendor === "Employee" ? opt.value.includes("V010") : !opt.value.includes("V010"))
-                                                            .map(opt => (
-                                                                <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                                            ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    {/* Row 1, Col 2: Vendor Name / Employee Name */}
-                                    <FormField
-                                        control={form.control}
-                                        name="name1"
-                                        render={({ field }) => (
-                                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                <FormLabel className="block font-medium text-foreground">{typeOfVendor === "Employee" ? "Employee Name" : "Vendor Name (Name1)"} <span className="text-destructive">*</span></FormLabel>
+                                            <FormItem className="space-y-3 mb-4">
+                                                <FormLabel className="block font-medium text-base text-foreground">
+                                                    Type of Vendor <span className="text-destructive">*</span>
+                                                </FormLabel>
                                                 <FormControl>
-                                                    <Input className="h-10 border-border bg-background focus:ring-1 focus:ring-primary text-[13px] font-semibold" placeholder={`Enter ${typeOfVendor === "Employee" ? "employee" : "vendor"} name`} {...field} maxLength={35} />
+                                                    <RadioGroup
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                        className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 w-full justify-start"
+                                                    >
+                                                        {[
+                                                            { id: "employee", label: "Employee", val: "Employee" },
+                                                            { id: "purchase", label: "Vendor Purchase Org", val: "XK01" },
+                                                            { id: "direct", label: "Direct FI Vendor", val: "FK01" }
+                                                        ].map(opt => (
+                                                            <div key={opt.id} className="flex">
+                                                                <label
+                                                                    htmlFor={opt.id}
+                                                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg border cursor-pointer w-full transition-all duration-300 ${field.value === opt.val ? "bg-primary/5 border-primary ring-1 ring-primary/20 shadow-md scale-[1.02]" : "bg-card border-border hover:border-primary/20"}`}
+                                                                >
+                                                                    <RadioGroupItem value={opt.val} id={opt.id} className="h-4 w-4 border-2 outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" />
+                                                                    <span className="text-xs sm:text-sm font-medium cursor-pointer text-foreground">{opt.label}</span>
+                                                                </label>
+                                                            </div>
+                                                        ))}
+                                                    </RadioGroup>
                                                 </FormControl>
-                                                <FormDescription className="text-[10px] text-muted-foreground">
-                                                    Only 35 characters are allowed rest can be filled in the next screen Name2
-                                                </FormDescription>
-                                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                                                <FormMessage className="text-[10px]" />
                                             </FormItem>
                                         )}
                                     />
 
-                                    {/* Row 2, Col 1: GSTIN Requirement (Non-Employee Only) */}
-                                    {typeOfVendor !== "Employee" && (
+                                    {/* Dual Column Layout EXACTLY like old grid */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+
+                                        {/* Row 1, Col 1: Vendor Account Group */}
                                         <FormField
                                             control={form.control}
-                                            name="gstin_requirement"
+                                            name="vendor_account_group"
                                             render={({ field }) => (
                                                 <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                    <FormLabel className="block font-medium text-foreground">GSTIN Requirement <span className="text-destructive">*</span></FormLabel>
+                                                    <FormLabel className="block font-medium text-foreground">Vendor Account Group <span className="text-destructive">*</span></FormLabel>
                                                     <Select onValueChange={(val) => {
                                                         field.onChange(val);
-                                                        form.clearErrors("gstin_requirement");
+                                                        form.clearErrors("vendor_account_group");
                                                     }} value={field.value} disabled={typeOfVendor === "Employee"}>
                                                         <FormControl>
-                                                            <SelectTrigger className="w-full h-10 border-border bg-background focus:ring-1 focus:ring-primary text-[13px] font-semibold">
-                                                                <SelectValue placeholder="Select requirement" />
+                                                            <SelectTrigger className={`w-full h-10 focus:ring-1 focus:ring-primary text-[13px] font-semibold ${typeOfVendor === "Employee" ? "bg-muted text-muted-foreground" : "bg-background border-border"}`}>
+                                                                <SelectValue placeholder="Choose vendor group" />
                                                             </SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            <SelectItem value="Registered" className="text-[13px]">Registered</SelectItem>
-                                                            <SelectItem value="Not Registered" className="text-[13px]">Not Registered</SelectItem>
+                                                            {(lovData?.vendorAccountGroup || [])
+                                                                .filter(opt => typeOfVendor === "Employee" ? opt.value.includes("V010") : !opt.value.includes("V010"))
+                                                                .map(opt => (
+                                                                    <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                                                ))}
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage className="text-[10px] absolute bottom-0 left-0" />
                                                 </FormItem>
                                             )}
                                         />
-                                    )}
 
-                                    {/* Row 2, Col 2: PAN Number (Non-Employee Only) */}
-                                    {typeOfVendor !== "Employee" && (
+                                        {/* Row 1, Col 2: Vendor Name / Employee Name */}
                                         <FormField
                                             control={form.control}
-                                            name="pan_number"
+                                            name="name1"
                                             render={({ field }) => (
                                                 <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                    <FormLabel className="block font-medium text-foreground">PAN Number <span className="text-destructive">*</span></FormLabel>
+                                                    <FormLabel className="block font-medium text-foreground">{typeOfVendor === "Employee" ? "Employee Name" : "Vendor Name (Name1)"} <span className="text-destructive">*</span></FormLabel>
                                                     <FormControl>
-                                                        <Input
-                                                            className={`h-10 font-mono text-[13px] uppercase font-bold ${gstinReq === "Registered" ? "bg-muted text-muted-foreground border-border cursor-not-allowed" : "bg-background border-border"}`}
-                                                            placeholder="Enter PAN Number (10 characters)"
-                                                            {...field}
-                                                            maxLength={10}
-                                                            onChange={e => field.onChange(e.target.value.toUpperCase())}
-                                                            disabled={gstinReq === "Registered"}
-                                                        />
+                                                        <Input className="h-10 border-border bg-background focus:ring-1 focus:ring-primary text-[13px] font-semibold" placeholder={`Enter ${typeOfVendor === "Employee" ? "employee" : "vendor"} name`} {...field} maxLength={35} />
                                                     </FormControl>
+                                                    <FormDescription className="text-[10px] text-muted-foreground">
+                                                        Only 35 characters are allowed rest can be filled in the next screen Name2
+                                                    </FormDescription>
                                                     <FormMessage className="text-[10px] absolute bottom-0 left-0" />
                                                 </FormItem>
                                             )}
                                         />
-                                    )}
 
-                                    {/* Row 3, Col 1 (or Row 2 Col 1 for Employee): Employee Number or Spacer */}
-                                    {typeOfVendor === "Employee" ? (
-                                        <FormField
-                                            control={form.control}
-                                            name="employee_number"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                    <FormLabel className="block font-medium text-foreground">Employee Number <span className="text-destructive">*</span></FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            className="h-10 border-border bg-background text-[13px] font-bold"
-                                                            placeholder="Enter employee number"
-                                                            {...field}
-                                                            maxLength={4}
-                                                            onChange={e => field.onChange(e.target.value.replace(/[^0-9]/g, ""))}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    ) : (
-                                        /* Ghost cell to reserve exact Row 3 height, preventing layout jumps when GSTIN toggles */
-                                        <div className="hidden lg:flex flex-col justify-start gap-1.5 relative pb-4 invisible pointer-events-none select-none">
-                                            <label className="block font-medium">Spacer</label>
-                                            <div className="h-10"></div>
-                                        </div>
-                                    )}
-
-                                    {/* Row 3, Col 2: GSTIN (Non-Employee Only) */}
-                                    {/* Wraps in an animation block, maintaining exact space to prevent footer bouncing */}
-                                    {typeOfVendor !== "Employee" && (
-                                        <div className={`w-full transition-opacity duration-300 ${gstinReq === "Registered" ? "opacity-100" : "opacity-0 invisible pointer-events-none hidden lg:block"}`}>
-                                            {gstinReq === "Registered" && (
-                                                <FormField
-                                                    control={form.control}
-                                                    name="gstin"
-                                                    render={({ field }) => (
-                                                        <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                            <FormLabel className="block font-medium text-foreground">Tax Number 3 (GSTIN) <span className="text-destructive">*</span></FormLabel>
+                                        {/* Row 2, Col 1: GSTIN Requirement (Non-Employee Only) */}
+                                        {typeOfVendor !== "Employee" && (
+                                            <FormField
+                                                control={form.control}
+                                                name="gstin_requirement"
+                                                render={({ field }) => (
+                                                    <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                                        <FormLabel className="block font-medium text-foreground">GSTIN Requirement <span className="text-destructive">*</span></FormLabel>
+                                                        <Select onValueChange={(val) => {
+                                                            field.onChange(val);
+                                                            form.clearErrors("gstin_requirement");
+                                                        }} value={field.value} disabled={typeOfVendor === "Employee"}>
                                                             <FormControl>
-                                                                <Input
-                                                                    className="h-10 border-border bg-background font-mono text-[13px] uppercase font-bold"
-                                                                    placeholder="Enter GSTIN Number (15 characters)"
-                                                                    {...field}
-                                                                    maxLength={15}
-                                                                    onChange={e => field.onChange(e.target.value.toUpperCase())}
-                                                                />
+                                                                <SelectTrigger className="w-full h-10 border-border bg-background focus:ring-1 focus:ring-primary text-[13px] font-semibold">
+                                                                    <SelectValue placeholder="Select requirement" />
+                                                                </SelectTrigger>
                                                             </FormControl>
-                                                            <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            </form>
-                        </Form>
-                </div>
-            </div>
-        </div>
+                                                            <SelectContent>
+                                                                <SelectItem value="Registered" className="text-[13px]">Registered</SelectItem>
+                                                                <SelectItem value="Not Registered" className="text-[13px]">Not Registered</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        )}
 
-            {/* Sticky Action Buttons */}
-            <div className="flex-shrink-0 bg-background border-t border-border p-4 w-full z-10">
-                <div className="w-full max-w-7xl mx-auto flex justify-end gap-3 md:gap-4">
-                    <Button type="button" variant="outline" className="px-8 h-10 font-bold w-full sm:w-auto" onClick={() => navigate(-1)}>
-                        Cancel
-                    </Button>
-                    <Button
-                        type="submit"
-                        className={`px-10 h-10 border-none font-bold tracking-wide w-full sm:w-auto shadow-none transition-all duration-300 ${isValid ? "bg-[#e5a060] hover:bg-[#d48d4c] text-black" : "bg-[#FFD1A6] opacity-50 cursor-not-allowed text-black/60"}`}
-                        disabled={loading || !isValid}
-                    >
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Next"}
-                    </Button>
-                </div>
-            </div>
+                                        {/* Row 2, Col 2: PAN Number (Non-Employee Only) */}
+                                        {typeOfVendor !== "Employee" && (
+                                            <FormField
+                                                control={form.control}
+                                                name="pan_number"
+                                                render={({ field }) => (
+                                                    <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                                        <FormLabel className="block font-medium text-foreground">PAN Number <span className="text-destructive">*</span></FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                className={`h-10 font-mono text-[13px] uppercase font-bold ${gstinReq === "Registered" ? "bg-muted text-muted-foreground border-border cursor-not-allowed" : "bg-background border-border"}`}
+                                                                placeholder="Enter PAN Number (10 characters)"
+                                                                {...field}
+                                                                maxLength={10}
+                                                                onChange={e => field.onChange(e.target.value.toUpperCase())}
+                                                                disabled={gstinReq === "Registered"}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        )}
+
+                                        {/* Row 3, Col 1 (or Row 2 Col 1 for Employee): Employee Number or Spacer */}
+                                        {typeOfVendor === "Employee" ? (
+                                            <FormField
+                                                control={form.control}
+                                                name="employee_number"
+                                                render={({ field }) => (
+                                                    <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                                        <FormLabel className="block font-medium text-foreground">Employee Number <span className="text-destructive">*</span></FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                className="h-10 border-border bg-background text-[13px] font-bold"
+                                                                placeholder="Enter employee number"
+                                                                {...field}
+                                                                maxLength={4}
+                                                                onChange={e => field.onChange(e.target.value.replace(/[^0-9]/g, ""))}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        ) : (
+                                            /* Ghost cell to reserve exact Row 3 height, preventing layout jumps when GSTIN toggles */
+                                            <div className="hidden lg:flex flex-col justify-start gap-1.5 relative pb-4 invisible pointer-events-none select-none">
+                                                <label className="block font-medium">Spacer</label>
+                                                <div className="h-10"></div>
+                                            </div>
+                                        )}
+
+                                        {/* Row 3, Col 2: GSTIN (Non-Employee Only) */}
+                                        {/* Wraps in an animation block, maintaining exact space to prevent footer bouncing */}
+                                        {typeOfVendor !== "Employee" && (
+                                            <div className={`w-full transition-opacity duration-300 ${gstinReq === "Registered" ? "opacity-100" : "opacity-0 invisible pointer-events-none hidden lg:block"}`}>
+                                                {gstinReq === "Registered" && (
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="gstin"
+                                                        render={({ field }) => (
+                                                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                                                <FormLabel className="block font-medium text-foreground">Tax Number 3 (GSTIN) <span className="text-destructive">*</span></FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        className="h-10 border-border bg-background font-mono text-[13px] uppercase font-bold"
+                                                                        placeholder="Enter GSTIN Number (15 characters)"
+                                                                        {...field}
+                                                                        maxLength={15}
+                                                                        onChange={e => field.onChange(e.target.value.toUpperCase())}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sticky Action Buttons */}
+                    <div className="flex-shrink-0 bg-background border-t border-border p-4 w-full">
+                        <div className="w-full max-w-7xl mx-auto flex justify-end gap-3 md:gap-4">
+                            <Button type="button" variant="outline" className="px-8 h-10 font-bold w-full sm:w-auto" onClick={() => navigate(-1)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                form="vendor-step1-form"
+                                className={`px-10 h-10 border-none font-bold tracking-wide w-full sm:w-auto shadow-none transition-all duration-300 ${isValid ? "bg-[#e5a060] hover:bg-[#d48d4c] text-black" : "bg-[#FFD1A6] opacity-50 cursor-not-allowed text-black/60"}`}
+                                disabled={loading || !isValid}
+                            >
+                                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Next"}
+                            </Button>
+                        </div>
+                    </div>
+                </form>
+            </Form>
         </div>
     );
 };
