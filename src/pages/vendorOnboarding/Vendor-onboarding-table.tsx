@@ -132,7 +132,7 @@ const VendorOnboarding = () => {
             transId: vendor.trans_id,
             mode: "view",
         });
-        navigate(`/vendor-view?${params.toString()}`);
+        navigate(`/vendor-form?${params.toString()}`);
     };
 
     // Handle edit vendor - navigate to edit mode
@@ -141,7 +141,7 @@ const VendorOnboarding = () => {
             formName: formName,
             orgName: "Rustomjee",
             transId: vendor.trans_id,
-            editMode: "true",
+            mode: "edit",
         });
         navigate(`/vendor-form?${params.toString()}`);
     };

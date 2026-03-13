@@ -11,9 +11,10 @@ interface FormFileFieldProps {
     description?: string;
     required?: boolean;
     accept?: string;
+    disabled?: boolean;
 }
 
-export const FormFileField = ({ name, label, description, required, accept = ".pdf,.jpg,.jpeg,.png" }: FormFileFieldProps) => {
+export const FormFileField = ({ name, label, description, required, accept = ".pdf,.jpg,.jpeg,.png", disabled = false }: FormFileFieldProps) => {
     const { control, setValue, watch } = useFormContext();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const fileData = watch(name);
@@ -65,10 +66,11 @@ export const FormFileField = ({ name, label, description, required, accept = ".p
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="w-full border-dashed h-20 flex flex-col gap-2 hover:bg-muted/50"
-                                    onClick={() => fileInputRef.current?.click()}
+                                    className={`w-full border-dashed h-20 flex flex-col gap-2 transition-colors ${disabled ? "bg-muted cursor-not-allowed opacity-60" : "hover:bg-muted/50"}`}
+                                    onClick={() => !disabled && fileInputRef.current?.click()}
+                                    disabled={disabled}
                                 >
-                                    <Upload className="h-5 w-5 text-muted-foreground" />
+                                    <Upload className={`h-5 w-5 ${disabled ? "text-muted-foreground/50" : "text-muted-foreground"}`} />
                                     <span className="text-sm font-normal">Click to upload document</span>
                                 </Button>
                             ) : (
@@ -84,15 +86,17 @@ export const FormFileField = ({ name, label, description, required, accept = ".p
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                                            onClick={removeFile}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
+                                        {!disabled && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                                onClick={removeFile}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             )}

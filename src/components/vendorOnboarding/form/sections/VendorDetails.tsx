@@ -1,129 +1,229 @@
-import { useFormContext } from "react-hook-form";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { useFormContext } from "react-hook-form";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
+import { useEffect } from "react";
+import { getPlanningGroupFromVendorAccountGroup } from "@/components/vendor/lov-utils";
 
-const VendorDetails = () => {
-    const { control } = useFormContext<VendorFormValues>();
+const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnly?: boolean; isStep1ReadOnly?: boolean }) => {
+    const { control, watch, setValue } = useFormContext<VendorFormValues>();
     const { lovData } = useLOVData();
 
+    const vendorAccountGroup = watch("vendor_details.vendor_account_group");
+    const planningGroup = watch("internal_details.planning_group");
+
+    // Auto-populate planning group based on vendor account group
+    useEffect(() => {
+        if (vendorAccountGroup && lovData?.vendorAccPlanningGroup && !planningGroup) {
+            const group = getPlanningGroupFromVendorAccountGroup(
+                vendorAccountGroup,
+                lovData.vendorAccPlanningGroup
+            );
+            if (group) {
+                setValue("internal_details.planning_group", group, { shouldValidate: true });
+            }
+        }
+    }, [vendorAccountGroup, lovData, planningGroup, setValue]);
+
+    const toTitleCase = (str: string) => {
+        return str.replace(/\b([a-zA-Z])(\w*)/g, (_, first, rest) =>
+            first.toUpperCase() + rest.toLowerCase()
+        );
+    };
+
+    const isV010 = vendorAccountGroup?.startsWith("V010");
+
     return (
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            <h3 className="col-span-full text-lg font-semibold border-b pb-2 mb-2 text-primary">Basic Information</h3>
-            
-            <FormField
-                control={control}
-                name="vendor_details.name1"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Full Name / Name 1 *</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Enter legal vendor name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+        <>
+            <CardHeader className="pb-4">
+                <CardTitle className="text-base font-bold">Vendor Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 items-start">
+                    {/* Row 1 */}
+                    <FormField
+                        control={control}
+                        name="vendor_details.vendor_account_group"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Vendor Account Group <span className="text-red-500">*</span></FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isStep1ReadOnly}>
+                                    <FormControl>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                            <SelectValue placeholder="Select group" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {(lovData?.vendorAccountGroup || []).map(opt => (
+                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
 
-            <FormField
-                control={control}
-                name="vendor_details.name2"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Name 2 (Optional)</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Additional name info" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+                    <FormField
+                        control={control}
+                        name="vendor_details.employee_number"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Employee Number {isV010 && <span className="text-red-500">*</span>}</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Enter 4-digit employee number"
+                                        {...field}
+                                        readOnly={isStep1ReadOnly}
+                                        className={`h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
+                                        maxLength={4}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
 
-            <FormField
-                control={control}
-                name="vendor_details.vendor_account_group"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Vendor Account Group *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || ""}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select group" />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {(lovData?.vendorAccountGroup || []).map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+                    {/* Row 2 */}
+                    <FormField
+                        control={control}
+                        name="vendor_details.company_code"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Company Code <span className="text-red-500">*</span></FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
+                                    <FormControl>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                            <SelectValue placeholder="Select code" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {(lovData?.companyCode || []).map(opt => (
+                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
 
-            <FormField
-                control={control}
-                name="vendor_details.company_code"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Company Code *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || ""}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select code" />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {(lovData?.companyCode || []).map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+                    <FormField
+                        control={control}
+                        name="vendor_details.title_text"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Title Text <span className="text-red-500">*</span></FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
+                                    <FormControl>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                            <SelectValue placeholder="Select title" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {(lovData?.titleText || []).map(opt => (
+                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
 
-            <FormField
-                control={control}
-                name="vendor_details.terms_of_payment_key"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Terms of Payment *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || ""}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select terms" />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {(lovData?.termsOfPaymentKey || []).map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+                    {/* Row 3 */}
+                    <FormField
+                        control={control}
+                        name="vendor_details.name1"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Name 1 <span className="text-red-500">*</span></FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Enter legal vendor name"
+                                        {...field}
+                                        readOnly={isStep1ReadOnly}
+                                        className={`h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
+                                        maxLength={35}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
 
-            <FormField
-                control={control}
-                name="vendor_details.search_term1"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Search Term</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Short identifier" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-        </div>
+                    <FormField
+                        control={control}
+                        name="vendor_details.name2"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Name 2</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Enter additional name (Optional)"
+                                        {...field}
+                                        maxLength={35}
+                                        readOnly={isReadOnly}
+                                        className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
+                                        onChange={(e) => field.onChange(toTitleCase(e.target.value))}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Row 4 */}
+                    <FormField
+                        control={control}
+                        name="vendor_details.search_term1"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Search Term 1 <span className="text-red-500">*</span></FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Short identifier"
+                                        {...field}
+                                        maxLength={18}
+                                        readOnly={isReadOnly}
+                                        className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
+                                        onChange={(e) => field.onChange(toTitleCase(e.target.value))}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={control}
+                        name="vendor_details.terms_of_payment_key"
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Terms of Payment Key <span className="text-red-500">*</span></FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
+                                    <FormControl>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                            <SelectValue placeholder="Select terms" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {(lovData?.termsOfPaymentKey || []).map(opt => (
+                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )}
+                    />
+
+                </div>
+            </CardContent>
+        </>
     );
 };
 

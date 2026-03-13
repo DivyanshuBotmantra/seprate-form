@@ -8,7 +8,7 @@ export const attachmentSchema = z.object({
 });
 
 export const vendorFormSchema = z.object({
-    type_of_vendor: z.enum(["XK01", "FK01"]),
+    type_of_vendor: z.enum(["XK01", "FK01", "Employee"]),
     vendor_details: z.object({
         vendor_account_group: z.string().min(1, "Vendor Account Group is required"),
         company_code: z.string().min(1, "Company Code is required"),
@@ -118,6 +118,28 @@ export const vendorFormSchema = z.object({
         bank_details_attachment: attachmentSchema.optional().nullable(),
         other_attachments: z.array(attachmentSchema).optional(),
     }),
+}).superRefine((data, ctx) => {
+    // CIN Mandatory Logic: PAN 4th char 'F' + "LLP" in names
+    const pan = data.key_details.pan_number;
+    const name1 = data.vendor_details.name1 || "";
+    const name2 = data.vendor_details.name2 || "";
+    const cin = data.key_details.cin_number;
+
+    if (pan && pan.length >= 4) {
+        const fourthChar = pan[3].toUpperCase();
+        if (fourthChar === 'F') {
+            const combinedNames = `${name1} ${name2}`.toLowerCase();
+            const hasLLP = combinedNames.includes("llp");
+            
+            if (hasLLP && !cin) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "CIN is mandatory for LLP vendors",
+                    path: ["key_details", "cin_number"],
+                });
+            }
+        }
+    }
 });
 
 export type VendorFormValues = z.infer<typeof vendorFormSchema>;

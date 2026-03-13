@@ -2,11 +2,12 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
-import { getRegionsForCountry } from "../../utils/lov-utils";
+import { getRegionsForCountry } from "@/components/vendorOnboarding/utils/lov-utils";
 
-const AddressDetails = () => {
+const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
     const { control, setValue } = useFormContext<VendorFormValues>();
     const { lovData } = useLOVData();
 
@@ -19,69 +20,128 @@ const AddressDetails = () => {
     );
 
     return (
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            <h3 className="col-span-full text-lg font-semibold border-b pb-2 mb-2 text-primary">Communication Address</h3>
-            
-            <FormField control={control} name="address_details.street" render={({ field }) => (
-                <FormItem><FormLabel>Street/House No *</FormLabel><FormControl><Input placeholder="Building, Street name" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
+        <>
+            <CardHeader className="pb-4">
+                <CardTitle className="text-base font-bold">Communication Address</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 items-start">
+                    <FormField 
+                        control={control} 
+                        name="address_details.street" 
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Street/House No *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="Building, Street name" 
+                                        {...field} 
+                                        readOnly={isReadOnly}
+                                        className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )} 
+                    />
 
-            <FormField control={control} name="address_details.city" render={({ field }) => (
-                <FormItem><FormLabel>City *</FormLabel><FormControl><Input placeholder="City name" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
+                    <FormField 
+                        control={control} 
+                        name="address_details.city" 
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">City *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="City name" 
+                                        {...field} 
+                                        readOnly={isReadOnly}
+                                        className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )} 
+                    />
 
-            <FormField control={control} name="address_details.city_postal_code" render={({ field }) => (
-                <FormItem><FormLabel>Post Code *</FormLabel><FormControl><Input placeholder="6-digit ZIP" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
+                    <FormField 
+                        control={control} 
+                        name="address_details.city_postal_code" 
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Post Code *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="6-digit ZIP" 
+                                        {...field} 
+                                        readOnly={isReadOnly}
+                                        className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )} 
+                    />
 
-            <FormField control={control} name="address_details.country_key" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Country *</FormLabel>
-                    <Select 
-                        onValueChange={(val) => {
-                            field.onChange(val);
-                            setValue("address_details.region", ""); // Reset region on country change
-                        }} 
-                        value={field.value || ""}
-                    >
-                        <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select country" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            {(lovData?.countryOptions || []).map(opt => (
-                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
-            )} />
+                    <FormField 
+                        control={control} 
+                        name="address_details.country_key" 
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Country *</FormLabel>
+                                <Select 
+                                    onValueChange={(val) => {
+                                        field.onChange(val);
+                                        setValue("address_details.region", ""); // Reset region on country change
+                                    }} 
+                                    value={field.value || ""}
+                                    disabled={isReadOnly}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                            <SelectValue placeholder="Select country" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {(lovData?.countryOptions || []).map(opt => (
+                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )} 
+                    />
 
-            <FormField control={control} name="address_details.region" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Region/State *</FormLabel>
-                    <Select 
-                        onValueChange={field.onChange} 
-                        value={field.value || ""}
-                        disabled={!countryKey}
-                    >
-                        <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder={countryKey ? "Select state" : "Select country first"} />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            {filteredRegions.map(opt => (
-                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
-            )} />
-        </div>
+                    <FormField 
+                        control={control} 
+                        name="address_details.region" 
+                        render={({ field }) => (
+                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
+                                <FormLabel className="text-sm font-medium text-foreground">Region/State *</FormLabel>
+                                <Select 
+                                    onValueChange={field.onChange} 
+                                    value={field.value || ""}
+                                    disabled={isReadOnly || !countryKey}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly || !countryKey ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                            <SelectValue placeholder={countryKey ? "Select state" : "Select country first"} />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {filteredRegions.map(opt => (
+                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
+                            </FormItem>
+                        )} 
+                    />
+                </div>
+            </CardContent>
+        </>
     );
 };
 export default AddressDetails;

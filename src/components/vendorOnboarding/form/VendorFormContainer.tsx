@@ -3,15 +3,15 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Loader2, Save, Send } from "lucide-react";
+import { Loader2, Save, Send, ChevronLeft } from "lucide-react";
 
 import { vendorFormSchema, type VendorFormValues } from "./schema";
 import { VENDOR_FORM_DEFAULTS, FORMDATA_CONFIG } from "./config";
 import { getFormData, updateFormData } from "@/services/vendor-onboarding/form-data";
 import { useVendorDataLoader } from "../hooks/useVendorDataLoader";
+import { prepareUpdatePayload } from "./mapper";
 
 import TypeOfVendor from "./sections/TypeOfVendor";
 import VendorDetails from "./sections/VendorDetails";
@@ -21,6 +21,7 @@ import BankDetails from "./sections/BankDetails";
 import InternalDetails from "./sections/InternalDetails";
 import SystemFields from "./sections/SystemFields";
 import Attachments from "./sections/Attachments";
+
 
 import { LOVProvider } from "./LOVContext";
 
@@ -36,7 +37,6 @@ const VendorFormContainer = () => {
     const [searchParams] = useSearchParams();
     const transId = searchParams.get("transId");
     const mode = searchParams.get("mode") || "edit";
-    const [activeTab, setActiveTab] = useState("type");
 
     // Load LOVs and form metadata
     const { lovData, isLoadingLov } = useVendorDataLoader();
@@ -47,9 +47,11 @@ const VendorFormContainer = () => {
         mode: "onBlur",
     });
 
-    const { handleSubmit, reset, formState: { errors, isSubmitting } } = methods;
+    const { handleSubmit, reset, formState } = methods;
+    const { errors, isSubmitting, isValid } = formState;
 
     const [loading, setLoading] = useState(!!transId);
+    const [formId, setFormId] = useState<string>("");
 
     // Load existing data if transId is present
     useEffect(() => {
@@ -64,6 +66,7 @@ const VendorFormContainer = () => {
 
                 if (data && data.response_body?.[0]) {
                     const record = data.response_body[0];
+                    setFormId(record.id || record.trans_id || "");
                     reset(record.form_data);
                 } else if (error) {
                     toast.error("Failed to load vendor data");
@@ -76,17 +79,21 @@ const VendorFormContainer = () => {
 
     const onSubmit = async (values: VendorFormValues, status: "Submitted" | "Draft" = "Submitted") => {
         try {
-            const payload = {
-                search_fields: {
-                    transaction_id: transId,
-                    org_name: FORMDATA_CONFIG.ORG_NAME
-                },
-                update_fields: {
-                    form_status: status,
-                    form_data: values,
-                    updated_attachment_fields: [] // TODO: Track changed attachments
-                }
-            };
+            // Get user ID from session
+            const userDetailStr = sessionStorage.getItem("userDetail");
+            let userId = "unknown";
+            if (userDetailStr) {
+                const userDetail = JSON.parse(userDetailStr);
+                userId = userDetail.user_id || userDetail.userId || "unknown";
+            }
+
+            const payload = prepareUpdatePayload(
+                values,
+                status,
+                transId || "",
+                userId,
+                formId || transId || ""
+            );
 
             const { error } = await updateFormData(payload);
 
@@ -99,7 +106,8 @@ const VendorFormContainer = () => {
                 }
             }
         } catch (err) {
-            toast.error("An unexpected error occurred");
+            console.error("Submission error:", err);
+            toast.error("An unexpected error occurred during submission");
         }
     };
 
@@ -125,52 +133,73 @@ const VendorFormContainer = () => {
         <LOVProvider lovData={lovData} isLoading={isLoadingLov}>
             <FormProvider {...methods}>
                 <FormLogic />
-                <div className="max-w-7xl mx-auto space-y-6 pb-20">
-                    <div className="flex items-center justify-between px-4">
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight">
-                                {mode === "view" ? "View Vendor Details" : transId ? "Edit Vendor Registration" : "New Vendor Registration"}
-                            </h1>
-                            <p className="text-sm text-muted-foreground">
-                                {transId ? `Transaction ID: ${transId}` : "Fill out the details to register a new vendor"}
-                            </p>
-                        </div>
-                        <div className="flex gap-3">
-                            <Button variant="outline" onClick={() => handleSubmit((val) => onSubmit(val, "Draft"))()} disabled={isSubmitting}>
-                                <Save className="mr-2 h-4 w-4" /> Save Draft
-                            </Button>
-                            <Button onClick={handleSubmit((val) => onSubmit(val, "Submitted"))} disabled={isSubmitting}>
-                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                                Submit Form
-                            </Button>
+                <div className="h-full bg-sidebar rounded-lg border overflow-hidden shadow-sm flex flex-col">
+                    {/* Sticky Main Header */}
+                    <div className="bg-primary px-6 py-3 flex-shrink-0 border-b border-primary-foreground/10">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div onClick={() => navigate(-1)} className="hover:cursor-pointer transition-colors">
+                                    <ChevronLeft className="h-6 w-6 text-muted hover:text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-lg text-muted font-semibold uppercase tracking-wider">
+                                        VENDOR ONBOARDING FORM
+                                    </h1>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                {mode === "view" ? (
+                                    <div className="text-white text-sm font-medium pr-4">View Mode - Read Only</div>
+                                ) : (
+                                    <>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            className="px-4 h-9 font-bold bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white transition-all flex items-center gap-2"
+                                            onClick={handleSubmit((val) => onSubmit(val, "Draft"))}
+                                            disabled={isSubmitting || loading}
+                                        >
+                                            <Save className="h-4 w-4" /> Save Draft
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            className={`px-6 h-9 border-none font-bold tracking-wide shadow-none transition-all duration-300 ${(isValid && !loading) ? "bg-[#e5a060] hover:bg-[#d48d4c] text-black" : "bg-[#FFD1A6] opacity-50 cursor-not-allowed text-black/60"}`}
+                                            onClick={handleSubmit((val) => onSubmit(val, "Submitted"))}
+                                            disabled={isSubmitting || !isValid || loading}
+                                        >
+                                            {isSubmitting ? (
+                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                            ) : (
+                                                <Send className="h-4 w-4 mr-2" />
+                                            )}
+                                            Submit Form
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
 
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <TabsList className="grid w-full grid-cols-8 h-12 bg-muted/50 p-1">
-                                <TabsTrigger value="type" className="rounded-md">1. Type</TabsTrigger>
-                                <TabsTrigger value="details" className="rounded-md">2. Details</TabsTrigger>
-                                <TabsTrigger value="key" className="rounded-md">3. Key IDs</TabsTrigger>
-                                <TabsTrigger value="address" className="rounded-md">4. Address</TabsTrigger>
-                                <TabsTrigger value="bank" className="rounded-md">5. Banking</TabsTrigger>
-                                <TabsTrigger value="internal" className="rounded-md">6. Internal</TabsTrigger>
-                                <TabsTrigger value="system" className="rounded-md">7. System</TabsTrigger>
-                                <TabsTrigger value="attachments" className="rounded-md">8. Files</TabsTrigger>
-                            </TabsList>
-                            
-                            <div className="mt-6">
-                                <Card className="border-border/50 shadow-sm overflow-hidden">
-                                    <TabsContent value="type"><TypeOfVendor /></TabsContent>
-                                    <TabsContent value="details"><VendorDetails /></TabsContent>
-                                    <TabsContent value="key"><KeyDetails /></TabsContent>
-                                    <TabsContent value="address"><AddressDetails /></TabsContent>
-                                    <TabsContent value="bank"><BankDetails /></TabsContent>
-                                    <TabsContent value="internal"><InternalDetails /></TabsContent>
-                                    <TabsContent value="system"><SystemFields /></TabsContent>
-                                    <TabsContent value="attachments"><Attachments /></TabsContent>
-                                </Card>
+                    {/* Scrollable Form Body using individual floated cards exactly like v1 */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-sidebar">
+                        <div className="p-4 md:p-6 pb-8">
+                            <div className="max-w-7xl mx-auto space-y-6 mb-2">
+                                <Card><TypeOfVendor isReadOnly={mode === "view" || !!transId} /></Card>
+                                <Card><VendorDetails isReadOnly={mode === "view"} isStep1ReadOnly={mode === "view" || !!transId} /></Card>
+                                <Card><KeyDetails isReadOnly={mode === "view"} isStep1ReadOnly={mode === "view" || !!transId} /></Card>
+                                <Card><AddressDetails isReadOnly={mode === "view"} /></Card>
+                                <Card><BankDetails isReadOnly={mode === "view"} /></Card>
+                                <Card><InternalDetails isReadOnly={mode === "view"} /></Card>
+                                <Card><SystemFields /></Card>
+                                {mode !== "edit" && (
+                                    <Card><Attachments isReadOnly={mode === "view"} /></Card>
+                                )}
                             </div>
-                    </Tabs>
+                        </div>
+                    </div>
                 </div>
             </FormProvider>
         </LOVProvider>
