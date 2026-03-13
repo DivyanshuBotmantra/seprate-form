@@ -297,6 +297,7 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                             readOnly={isReadOnly || isEmployee}
                                             onChange={(e) => handleCINChange(e.target.value)}
                                             className={`h-10 font-semibold text-[13px] pr-10 ${(isReadOnly || isEmployee) ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
+                                            maxLength={isCompany ? 21 : (isFirm ? 9 : 21)}
                                         />
                                     </FileInputWrapper>
                                 </FormControl>

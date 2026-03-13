@@ -47,7 +47,7 @@ const VendorFormContainer = () => {
         mode: "onBlur",
     });
 
-    const { handleSubmit, reset, formState } = methods;
+    const { reset, formState } = methods;
     const { errors, isSubmitting, isValid } = formState;
 
     const [loading, setLoading] = useState(!!transId);
@@ -158,7 +158,7 @@ const VendorFormContainer = () => {
                                             variant="outline"
                                             size="sm"
                                             className="px-4 h-9 font-bold bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white transition-all flex items-center gap-2"
-                                            onClick={handleSubmit((val) => onSubmit(val, "Draft"))}
+                                            onClick={() => onSubmit(methods.getValues(), "Draft")}
                                             disabled={isSubmitting || loading}
                                         >
                                             <Save className="h-4 w-4" /> Save Draft
@@ -167,7 +167,7 @@ const VendorFormContainer = () => {
                                             type="button"
                                             size="sm"
                                             className={`px-6 h-9 border-none font-bold tracking-wide shadow-none transition-all duration-300 ${(isValid && !loading) ? "bg-[#e5a060] hover:bg-[#d48d4c] text-black" : "bg-[#FFD1A6] opacity-50 cursor-not-allowed text-black/60"}`}
-                                            onClick={handleSubmit((val) => onSubmit(val, "Submitted"))}
+                                            onClick={methods.handleSubmit((val) => onSubmit(val, "Submitted"))}
                                             disabled={isSubmitting || !isValid || loading}
                                         >
                                             {isSubmitting ? (

@@ -471,8 +471,8 @@ const VendorFormStep1 = () => {
                             <Button
                                 type="submit"
                                 form="vendor-step1-form"
-                                className={`px-10 h-10 border-none font-bold tracking-wide w-full sm:w-auto shadow-none transition-all duration-300 ${isValid ? "bg-[#e5a060] hover:bg-[#d48d4c] text-black" : "bg-[#FFD1A6] opacity-50 cursor-not-allowed text-black/60"}`}
-                                disabled={loading || !isValid}
+                                className={`px-10 h-10 border-none font-bold tracking-wide w-full sm:w-auto shadow-none transition-all duration-300 ${isValid ? "bg-[#e5a060] hover:bg-[#d48d4c] text-black" : "bg-[#e5a060] hover:bg-[#d48d4c] text-black"}`}
+                                disabled={loading}
                             >
                                 {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Next"}
                             </Button>
