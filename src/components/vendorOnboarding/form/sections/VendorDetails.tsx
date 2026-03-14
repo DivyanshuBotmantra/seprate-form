@@ -1,7 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormField, FormControl } from "@/components/ui/form";
+import FormInputWrapper from "../FormInputWrapper";
 import { useFormContext } from "react-hook-form";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
@@ -42,17 +43,20 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                 <CardTitle className="text-base font-bold">Vendor Details</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 items-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 items-start">
                     {/* Row 1 */}
                     <FormField
                         control={control}
                         name="vendor_details.vendor_account_group"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Vendor Account Group <span className="text-red-500">*</span></FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Vendor Account Group"
+                                required
+                                error={fieldState.error}
+                            >
                                 <Select onValueChange={field.onChange} value={field.value || ""} disabled={isStep1ReadOnly}>
                                     <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
                                             <SelectValue placeholder="Select group" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -62,28 +66,27 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                            </FormInputWrapper>
                         )}
                     />
 
                     <FormField
                         control={control}
                         name="vendor_details.employee_number"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Employee Number {isV010 && <span className="text-red-500">*</span>}</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Enter 4-digit employee number"
-                                        {...field}
-                                        readOnly={isStep1ReadOnly}
-                                        className={`h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
-                                        maxLength={4}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Employee Number"
+                                required={isV010}
+                                error={fieldState.error}
+                            >
+                                <Input
+                                    placeholder="Enter 4-digit employee number"
+                                    {...field}
+                                    readOnly={isStep1ReadOnly}
+                                    className={`h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                    maxLength={4}
+                                />
+                            </FormInputWrapper>
                         )}
                     />
 
@@ -91,12 +94,15 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                     <FormField
                         control={control}
                         name="vendor_details.company_code"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Company Code <span className="text-red-500">*</span></FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Company Code"
+                                required
+                                error={fieldState.error}
+                            >
                                 <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
                                     <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
                                             <SelectValue placeholder="Select code" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -106,20 +112,22 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                            </FormInputWrapper>
                         )}
                     />
 
                     <FormField
                         control={control}
                         name="vendor_details.title_text"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Title Text <span className="text-red-500">*</span></FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Title Text"
+                                required
+                                error={fieldState.error}
+                            >
                                 <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
                                     <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
                                             <SelectValue placeholder="Select title" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -129,8 +137,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                            </FormInputWrapper>
                         )}
                     />
 
@@ -138,41 +145,41 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                     <FormField
                         control={control}
                         name="vendor_details.name1"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Name 1 <span className="text-red-500">*</span></FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Enter legal vendor name"
-                                        {...field}
-                                        readOnly={isStep1ReadOnly}
-                                        className={`h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
-                                        maxLength={35}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Name 1"
+                                required
+                                error={fieldState.error}
+                            >
+                                <Input
+                                    placeholder="Enter legal vendor name"
+                                    {...field}
+                                    readOnly={isStep1ReadOnly}
+                                    className={`h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                    maxLength={35}
+                                />
+                            </FormInputWrapper>
                         )}
                     />
 
                     <FormField
                         control={control}
                         name="vendor_details.name2"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Name 2</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Enter additional name (Optional)"
-                                        {...field}
-                                        maxLength={35}
-                                        readOnly={isReadOnly}
-                                        className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
-                                        onChange={(e) => field.onChange(toTitleCase(e.target.value))}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Name 2"
+                                error={fieldState.error}
+                                helperText="Enter additional name (Optional)"
+                            >
+                                <Input
+                                    placeholder="Enter additional name (Optional)"
+                                    {...field}
+                                    maxLength={35}
+                                    readOnly={isReadOnly}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                    onChange={(e) => field.onChange(toTitleCase(e.target.value))}
+                                />
+                            </FormInputWrapper>
                         )}
                     />
 
@@ -180,33 +187,36 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                     <FormField
                         control={control}
                         name="vendor_details.search_term1"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Search Term 1 <span className="text-red-500">*</span></FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Short identifier"
-                                        {...field}
-                                        maxLength={18}
-                                        readOnly={isReadOnly}
-                                        className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed pointer-events-none" : ""}`}
-                                        onChange={(e) => field.onChange(toTitleCase(e.target.value))}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Search Term 1"
+                                required
+                                error={fieldState.error}
+                            >
+                                <Input
+                                    placeholder="Short identifier"
+                                    {...field}
+                                    maxLength={18}
+                                    readOnly={isReadOnly}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                    onChange={(e) => field.onChange(toTitleCase(e.target.value))}
+                                />
+                            </FormInputWrapper>
                         )}
                     />
 
                     <FormField
                         control={control}
                         name="vendor_details.terms_of_payment_key"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                <FormLabel className="text-sm font-medium text-foreground">Terms of Payment Key <span className="text-red-500">*</span></FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Terms of Payment Key"
+                                required
+                                error={fieldState.error}
+                            >
                                 <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
                                     <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted/50 cursor-not-allowed" : ""}`}>
+                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
                                             <SelectValue placeholder="Select terms" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -216,11 +226,9 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                            </FormItem>
+                            </FormInputWrapper>
                         )}
                     />
-
                 </div>
             </CardContent>
         </>

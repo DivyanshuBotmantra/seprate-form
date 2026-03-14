@@ -7,13 +7,14 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Form, FormControl, FormField } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createFormData, getFormLovs } from "@/services/vendor-onboarding/form-data";
 import { Loader2, ChevronLeft } from "lucide-react";
 import { FIELD_DEPENDENCIES, createInitialDraftPayload, REGEX, FORMDATA_CONFIG } from "../../components/vendorOnboarding/form/config";
-import { mapAPILOVToDropdown } from "../../components/vendorOnboarding/utils/lov-utils";
-import type { LOVData } from "../../components/vendorOnboarding/utils/types";
+import FormInputWrapper from "../../components/vendorOnboarding/form/FormInputWrapper";
+import { mapAPILOVToDropdown } from "@/components/vendor/lov-utils";
+import type { LOVData } from "@/components/vendor/types";
 
 const step1Schema = z.object({
     type_of_vendor: z.enum(["Employee", "XK01", "FK01"]),
@@ -251,11 +252,11 @@ const VendorFormStep1 = () => {
                     <div className="flex-1 overflow-y-auto custom-scrollbar bg-background">
                         <div className="p-4 md:p-6 pb-20 max-w-7xl mx-auto space-y-6">
                             <div className="bg-card rounded-lg border shadow-sm p-4 md:p-6">
-                                <div className="mb-4 md:mb-6">
-                                    <h2 className="text-base md:text-lg font-semibold text-card-foreground mb-1 md:mb-2">
+                                <div className="mb-8">
+                                    <h2 className="text-base md:text-lg font-bold text-card-foreground mb-1">
                                         Primary Vendor Information
                                     </h2>
-                                    <p className="text-xs md:text-sm text-muted-foreground">
+                                    <p className="text-xs md:text-sm text-muted-foreground opacity-80">
                                         Enter the essential vendor details to get started. All fields are required.
                                     </p>
                                 </div>
@@ -265,11 +266,13 @@ const VendorFormStep1 = () => {
                                     <FormField
                                         control={form.control}
                                         name="type_of_vendor"
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-3 mb-4">
-                                                <FormLabel className="block font-medium text-base text-foreground">
-                                                    Type of Vendor <span className="text-destructive">*</span>
-                                                </FormLabel>
+                                        render={({ field, fieldState }) => (
+                                            <FormInputWrapper 
+                                                label="Type of Vendor"
+                                                required
+                                                error={fieldState.error}
+                                                className="mb-4"
+                                            >
                                                 <FormControl>
                                                     <RadioGroup
                                                         onValueChange={field.onChange}
@@ -284,36 +287,38 @@ const VendorFormStep1 = () => {
                                                             <div key={opt.id} className="flex">
                                                                 <label
                                                                     htmlFor={opt.id}
-                                                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg border cursor-pointer w-full transition-all duration-300 ${field.value === opt.val ? "bg-primary/5 border-primary ring-1 ring-primary/20 shadow-md scale-[1.02]" : "bg-card border-border hover:border-primary/20"}`}
+                                                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg border cursor-pointer w-full transition-all duration-300 ${field.value === opt.val ? "bg-primary/5 border-primary ring-[0.5px] ring-primary shadow-sm scale-[1.01]" : "bg-card border-border hover:border-primary/20"}`}
                                                                 >
                                                                     <RadioGroupItem value={opt.val} id={opt.id} className="h-4 w-4 border-2 outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" />
-                                                                    <span className="text-xs sm:text-sm font-medium cursor-pointer text-foreground">{opt.label}</span>
+                                                                    <span className="text-xs sm:text-sm font-semibold cursor-pointer text-foreground opacity-90">{opt.label}</span>
                                                                 </label>
                                                             </div>
                                                         ))}
                                                     </RadioGroup>
                                                 </FormControl>
-                                                <FormMessage className="text-[10px]" />
-                                            </FormItem>
+                                            </FormInputWrapper>
                                         )}
                                     />
 
-                                    {/* Dual Column Layout EXACTLY like old grid */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                                    {/* Dual Column Layout EXACTLY like AddressDetails.tsx */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 items-start mt-4">
 
                                         {/* Row 1, Col 1: Vendor Account Group */}
                                         <FormField
                                             control={form.control}
                                             name="vendor_account_group"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                    <FormLabel className="block font-medium text-foreground">Vendor Account Group <span className="text-destructive">*</span></FormLabel>
+                                            render={({ field, fieldState }) => (
+                                                <FormInputWrapper 
+                                                    label="Vendor Account Group"
+                                                    required
+                                                    error={fieldState.error}
+                                                >
                                                     <Select onValueChange={(val) => {
                                                         field.onChange(val);
                                                         form.clearErrors("vendor_account_group");
                                                     }} value={field.value} disabled={typeOfVendor === "Employee"}>
                                                         <FormControl>
-                                                            <SelectTrigger className={`w-full h-10 focus:ring-1 focus:ring-primary text-[13px] font-semibold ${typeOfVendor === "Employee" ? "bg-muted text-muted-foreground" : "bg-background border-border"}`}>
+                                                            <SelectTrigger className={`w-full h-10 text-[13px] font-semibold ${typeOfVendor === "Employee" ? "bg-muted cursor-not-allowed" : "bg-background border-border"}`}>
                                                                 <SelectValue placeholder="Choose vendor group" />
                                                             </SelectTrigger>
                                                         </FormControl>
@@ -325,8 +330,7 @@ const VendorFormStep1 = () => {
                                                                 ))}
                                                         </SelectContent>
                                                     </Select>
-                                                    <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                </FormItem>
+                                                </FormInputWrapper>
                                             )}
                                         />
 
@@ -334,34 +338,42 @@ const VendorFormStep1 = () => {
                                         <FormField
                                             control={form.control}
                                             name="name1"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                    <FormLabel className="block font-medium text-foreground">{typeOfVendor === "Employee" ? "Employee Name" : "Vendor Name (Name1)"} <span className="text-destructive">*</span></FormLabel>
+                                            render={({ field, fieldState }) => (
+                                                <FormInputWrapper 
+                                                    label={typeOfVendor === "Employee" ? "Employee Name" : "Vendor Name (Name1)"}
+                                                    required
+                                                    error={fieldState.error}
+                                                    helperText="Max 35 characters. Name 2 available details screens."
+                                                >
                                                     <FormControl>
-                                                        <Input className="h-10 border-border bg-background focus:ring-1 focus:ring-primary text-[13px] font-semibold" placeholder={`Enter ${typeOfVendor === "Employee" ? "employee" : "vendor"} name`} {...field} maxLength={35} />
+                                                        <Input 
+                                                            className="h-10 border-border bg-background text-[13px] font-semibold" 
+                                                            placeholder={`Enter ${typeOfVendor === "Employee" ? "employee" : "vendor"} name`} 
+                                                            {...field} 
+                                                            maxLength={35} 
+                                                        />
                                                     </FormControl>
-                                                    <FormDescription className="text-[10px] text-muted-foreground">
-                                                        Only 35 characters are allowed rest can be filled in the next screen Name2
-                                                    </FormDescription>
-                                                    <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                </FormItem>
+                                                </FormInputWrapper>
                                             )}
                                         />
 
                                         {/* Row 2, Col 1: GSTIN Requirement (Non-Employee Only) */}
-                                        {typeOfVendor !== "Employee" && (
+                                        {typeOfVendor !== "Employee" ? (
                                             <FormField
                                                 control={form.control}
                                                 name="gstin_requirement"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                        <FormLabel className="block font-medium text-foreground">GSTIN Requirement <span className="text-destructive">*</span></FormLabel>
+                                                render={({ field, fieldState }) => (
+                                                    <FormInputWrapper 
+                                                        label="GSTIN Requirement"
+                                                        required
+                                                        error={fieldState.error}
+                                                    >
                                                         <Select onValueChange={(val) => {
                                                             field.onChange(val);
                                                             form.clearErrors("gstin_requirement");
-                                                        }} value={field.value} disabled={typeOfVendor === "Employee"}>
+                                                        }} value={field.value}>
                                                             <FormControl>
-                                                                <SelectTrigger className="w-full h-10 border-border bg-background focus:ring-1 focus:ring-primary text-[13px] font-semibold">
+                                                                <SelectTrigger className="w-full h-10 border-border bg-background text-[13px] font-semibold">
                                                                     <SelectValue placeholder="Select requirement" />
                                                                 </SelectTrigger>
                                                             </FormControl>
@@ -370,92 +382,88 @@ const VendorFormStep1 = () => {
                                                                 <SelectItem value="Not Registered" className="text-[13px]">Not Registered</SelectItem>
                                                             </SelectContent>
                                                         </Select>
-                                                        <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                    </FormItem>
+                                                    </FormInputWrapper>
                                                 )}
                                             />
-                                        )}
-
-                                        {/* Row 2, Col 2: PAN Number (Non-Employee Only) */}
-                                        {typeOfVendor !== "Employee" && (
-                                            <FormField
-                                                control={form.control}
-                                                name="pan_number"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                        <FormLabel className="block font-medium text-foreground">PAN Number <span className="text-destructive">*</span></FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                className={`h-10 font-mono text-[13px] uppercase font-bold ${gstinReq === "Registered" ? "bg-muted text-muted-foreground border-border cursor-not-allowed" : "bg-background border-border"}`}
-                                                                placeholder="Enter PAN Number (10 characters)"
-                                                                {...field}
-                                                                maxLength={10}
-                                                                onChange={e => field.onChange(e.target.value.toUpperCase())}
-                                                                disabled={gstinReq === "Registered"}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )}
-
-                                        {/* Row 3, Col 1 (or Row 2 Col 1 for Employee): Employee Number or Spacer */}
-                                        {typeOfVendor === "Employee" ? (
+                                        ) : (
                                             <FormField
                                                 control={form.control}
                                                 name="employee_number"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                        <FormLabel className="block font-medium text-foreground">Employee Number <span className="text-destructive">*</span></FormLabel>
+                                                render={({ field, fieldState }) => (
+                                                    <FormInputWrapper 
+                                                        label="Employee Number"
+                                                        required
+                                                        error={fieldState.error}
+                                                    >
                                                         <FormControl>
                                                             <Input
-                                                                className="h-10 border-border bg-background text-[13px] font-bold"
-                                                                placeholder="Enter employee number"
+                                                                className="h-10 border-border bg-background text-[13px] font-semibold"
+                                                                placeholder="Enter 4-digit number"
                                                                 {...field}
                                                                 maxLength={4}
                                                                 onChange={e => field.onChange(e.target.value.replace(/[^0-9]/g, ""))}
                                                             />
                                                         </FormControl>
-                                                        <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                    </FormItem>
+                                                    </FormInputWrapper>
+                                                )}
+                                            />
+                                        )}
+
+                                        {/* Row 2, Col 2: PAN Number (Non-Employee Only) / Spacer for Employee */}
+                                        {typeOfVendor !== "Employee" ? (
+                                            <FormField
+                                                control={form.control}
+                                                name="pan_number"
+                                                render={({ field, fieldState }) => (
+                                                    <FormInputWrapper 
+                                                        label="PAN Number"
+                                                        required
+                                                        error={fieldState.error}
+                                                    >
+                                                        <FormControl>
+                                                            <Input
+                                                                className={`h-10 font-mono text-[13px] uppercase font-bold ${gstinReq === "Registered" ? "bg-muted cursor-not-allowed" : "bg-background border-border"}`}
+                                                                placeholder="Enter 10 character PAN"
+                                                                {...field}
+                                                                maxLength={10}
+                                                                onChange={e => field.onChange(e.target.value.toUpperCase())}
+                                                                readOnly={gstinReq === "Registered"}
+                                                            />
+                                                        </FormControl>
+                                                    </FormInputWrapper>
                                                 )}
                                             />
                                         ) : (
-                                            /* Ghost cell to reserve exact Row 3 height, preventing layout jumps when GSTIN toggles */
-                                            <div className="hidden lg:flex flex-col justify-start gap-1.5 relative pb-4 invisible pointer-events-none select-none">
-                                                <label className="block font-medium">Spacer</label>
-                                                <div className="h-10"></div>
-                                            </div>
+                                            /* Spacer div to ensure grid stability when employee fields are present */
+                                            <div className="hidden lg:block h-[64px]"></div>
                                         )}
 
-                                        {/* Row 3, Col 2: GSTIN (Non-Employee Only) */}
-                                        {/* Wraps in an animation block, maintaining exact space to prevent footer bouncing */}
-                                        {typeOfVendor !== "Employee" && (
-                                            <div className={`w-full transition-opacity duration-300 ${gstinReq === "Registered" ? "opacity-100" : "opacity-0 invisible pointer-events-none hidden lg:block"}`}>
-                                                {gstinReq === "Registered" && (
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="gstin"
-                                                        render={({ field }) => (
-                                                            <FormItem className="w-full flex flex-col justify-start gap-1.5 relative pb-4">
-                                                                <FormLabel className="block font-medium text-foreground">Tax Number 3 (GSTIN) <span className="text-destructive">*</span></FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        className="h-10 border-border bg-background font-mono text-[13px] uppercase font-bold"
-                                                                        placeholder="Enter GSTIN Number (15 characters)"
-                                                                        {...field}
-                                                                        maxLength={15}
-                                                                        onChange={e => field.onChange(e.target.value.toUpperCase())}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormMessage className="text-[10px] absolute bottom-0 left-0" />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
+                                        {/* Extra Row for GSTIN when Registered - Always occupies space on right if registered */}
+                                        <div className="md:col-start-2">
+                                            {typeOfVendor !== "Employee" && gstinReq === "Registered" && (
+                                                <FormField
+                                                    control={form.control}
+                                                    name="gstin"
+                                                    render={({ field, fieldState }) => (
+                                                        <FormInputWrapper 
+                                                            label="Tax Number 3 (GSTIN)"
+                                                            required
+                                                            error={fieldState.error}
+                                                        >
+                                                            <FormControl>
+                                                                <Input
+                                                                    className="h-10 border-border bg-background font-mono text-[13px] uppercase font-bold"
+                                                                    placeholder="Enter 15 character GSTIN"
+                                                                    {...field}
+                                                                    maxLength={15}
+                                                                    onChange={e => field.onChange(e.target.value.toUpperCase())}
+                                                                />
+                                                            </FormControl>
+                                                        </FormInputWrapper>
+                                                    )}
+                                                />
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

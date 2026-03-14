@@ -78,10 +78,28 @@ export const vendorFormSchema = z.object({
     }),
     bank_details: z.object({
         bank_key_ifsc_code: z.string().refine((val) => !val || REGEX.IFSC.test(val), "Invalid IFSC format").optional().or(z.literal("")),
-        bank_account_number: z.string().optional(),
-        bank_country_key: z.string().optional(),
-        account_holder_name: z.string().optional(),
-        partner_bank_type: z.string().optional(),
+        bank_account_number: z.string().optional().or(z.literal("")),
+        bank_country_key: z.string().optional().or(z.literal("")),
+        account_holder_name: z.string().optional().or(z.literal("")),
+        partner_bank_type: z.string().optional().or(z.literal("")),
+    }).superRefine((data, ctx) => {
+        // If IFSC is entered, Account Number and Holder Name are mandatory
+        if (data.bank_key_ifsc_code && data.bank_key_ifsc_code.length > 0) {
+            if (!data.bank_account_number) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Account number is required when IFSC is provided",
+                    path: ["bank_account_number"],
+                });
+            }
+            if (!data.account_holder_name) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Account holder name is required when IFSC is provided",
+                    path: ["account_holder_name"],
+                });
+            }
+        }
     }),
     address_details: z.object({
         street: z.string().min(1, "Street is required"),
@@ -110,6 +128,7 @@ export const vendorFormSchema = z.object({
         purchasing_organization: z.string().optional(),
         purchase_order_currency: z.string().min(1, "Currency is required"),
         order_acknowledgment_requirement: z.enum(["Yes", "No"]).optional(),
+        responsible_sales_person_at_vendor_office: z.string().optional().or(z.literal("")),
     }),
     system_fields: z.record(z.string(), z.any()).optional(),
     attachments: z.object({

@@ -1,12 +1,13 @@
 import { useEffect, useMemo } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormField, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import { getRegionsForCountry } from "@/components/vendorOnboarding/utils/lov-utils";
+import FormInputWrapper from "../FormInputWrapper";
 
 const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
     const { control, setValue, trigger } = useFormContext<VendorFormValues>();
@@ -69,381 +70,379 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                 <CardTitle className="text-base font-bold">Address Details</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 items-start">
-                    {/* Left Column */}
-                    <div className="space-y-4">
-                        <FormField 
-                            control={control} 
-                            name="address_details.street" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Street <span className="text-red-500">*</span></FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter Street Address" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
-                                            readOnly={isReadOnly}
-                                            maxLength={35}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 items-start">
+                    {/* Row 1 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.street" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Street"
+                                required
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder="Enter Street Address" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
+                                    readOnly={isReadOnly}
+                                    maxLength={35}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.street3" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Street 3</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter Street 3 (Optional)" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
-                                            readOnly={isReadOnly}
-                                            maxLength={35}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                    <FormField 
+                        control={control} 
+                        name="address_details.street2" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Street 2"
+                                error={fieldState.error}
+                                helperText="Enter Street 2 (Optional)"
+                            >
+                                <Input 
+                                    placeholder="Enter Street 2 (Optional)" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
+                                    readOnly={isReadOnly}
+                                    maxLength={35}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.street5" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Street 5</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter Street 5 (Optional)" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
-                                            readOnly={isReadOnly}
-                                            maxLength={35}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                    {/* Row 2 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.street3" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Street 3"
+                                error={fieldState.error}
+                                helperText="Enter Street 3 (Optional)"
+                            >
+                                <Input 
+                                    placeholder="Enter Street 3 (Optional)" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
+                                    readOnly={isReadOnly}
+                                    maxLength={35}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.city_postal_code" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">City Postal Code <span className="text-red-500">*</span></FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder={!isForeign ? "Enter 6-digit Postal Code" : "Enter Postal Code"} 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                                            readOnly={isReadOnly}
-                                            maxLength={6}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                    <FormField 
+                        control={control} 
+                        name="address_details.street4" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Street 4"
+                                error={fieldState.error}
+                                helperText="Enter Street 4 (Optional)"
+                            >
+                                <Input 
+                                    placeholder="Enter Street 4 (Optional)" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
+                                    readOnly={isReadOnly}
+                                    maxLength={35}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.country_key" 
-                            render={({ field }) => {
-                                // Find matching value in case API returns full label instead of code
-                                const matchingValue = useMemo(() => {
-                                    if (!field.value) return "";
-                                    const option = lovData?.countryOptions?.find(
-                                        opt => opt.value === field.value || opt.label === field.value
-                                    );
-                                    return option ? option.value : field.value;
-                                }, [field.value, lovData?.countryOptions]);
+                    {/* Row 3 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.street5" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Street 5"
+                                error={fieldState.error}
+                                helperText="Enter Street 5 (Optional)"
+                            >
+                                <Input 
+                                    placeholder="Enter Street 5 (Optional)" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
+                                    readOnly={isReadOnly}
+                                    maxLength={35}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                                return (
-                                    <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                        <FormLabel className="text-[13px] font-semibold text-foreground">Country Key <span className="text-red-500">*</span></FormLabel>
+                    <FormField 
+                        control={control} 
+                        name="address_details.district" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="District"
+                                error={fieldState.error}
+                                helperText="Enter District (Optional)"
+                            >
+                                <Input 
+                                    placeholder="Enter District (Optional)" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
+                                    readOnly={isReadOnly}
+                                    maxLength={35}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
+
+                    {/* Row 4 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.city_postal_code" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="City Postal Code"
+                                required
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder={!isForeign ? "Enter 6-digit Postal Code" : "Enter Postal Code"} 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                                    readOnly={isReadOnly}
+                                    maxLength={6}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
+
+                    <FormField 
+                        control={control} 
+                        name="address_details.city" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="City"
+                                required
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder="Enter City" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
+                                    readOnly={isReadOnly}
+                                    maxLength={35}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
+
+                    {/* Row 5 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.country_key" 
+                        render={({ field, fieldState }) => {
+                            const matchingValue = useMemo(() => {
+                                if (!field.value) return "";
+                                const option = lovData?.countryOptions?.find(
+                                    opt => opt.value === field.value || opt.label === field.value
+                                );
+                                return option ? option.value : field.value;
+                            }, [field.value, lovData?.countryOptions]);
+
+                            return (
+                                <FormInputWrapper 
+                                    label="Country Key"
+                                    required
+                                    error={fieldState.error}
+                                >
+                                    <Select 
+                                        onValueChange={(val) => {
+                                            field.onChange(val);
+                                            setValue("address_details.region", ""); 
+                                            trigger("address_details.country_key");
+                                        }} 
+                                        value={matchingValue || ""}
+                                        disabled={isCountryReadOnly}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isCountryReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
+                                                <SelectValue placeholder="Select Country" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {(lovData?.countryOptions || []).map(opt => (
+                                                <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormInputWrapper>
+                            );
+                        }} 
+                    />
+
+                    <FormField 
+                        control={control} 
+                        name="address_details.region" 
+                        render={({ field, fieldState }) => {
+                            const showAsInput = filteredRegions.length === 1 && countryKey;
+                            const matchingValue = useMemo(() => {
+                                if (!field.value) return "";
+                                const option = filteredRegions.find(
+                                    opt => opt.value === field.value || opt.label === field.value
+                                );
+                                return option ? option.value : field.value;
+                            }, [field.value, filteredRegions]);
+
+                            return (
+                                <FormInputWrapper 
+                                    label="Region"
+                                    required
+                                    error={fieldState.error}
+                                >
+                                    {showAsInput ? (
+                                        <FormControl>
+                                            <Input 
+                                                value={filteredRegions[0]?.label || ""}
+                                                readOnly
+                                                className="h-10 font-semibold text-[13px] bg-muted cursor-not-allowed"
+                                            />
+                                        </FormControl>
+                                    ) : (
                                         <Select 
                                             onValueChange={(val) => {
                                                 field.onChange(val);
-                                                setValue("address_details.region", ""); 
-                                                // Explicitly trigger validation to clear any "required" error immediately
-                                                trigger("address_details.country_key");
+                                                trigger("address_details.region");
                                             }} 
                                             value={matchingValue || ""}
-                                            disabled={isCountryReadOnly}
+                                            disabled={isReadOnly || !countryKey}
                                         >
                                             <FormControl>
-                                                <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isCountryReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
-                                                    <SelectValue placeholder="Select Country" />
+                                                <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly || !countryKey ? "bg-muted cursor-not-allowed" : ""}`}>
+                                                    <SelectValue placeholder={countryKey ? "Select Region" : "Select Country first"} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {(lovData?.countryOptions || []).map(opt => (
+                                                {filteredRegions.map(opt => (
                                                     <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        <FormMessage className="text-[10px]" />
-                                    </FormItem>
-                                );
-                            }} 
-                        />
+                                    )}
+                                </FormInputWrapper>
+                            );
+                        }} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.first_mobile_number_dialing_code_plus_number" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">First Mobile No</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter 10-digit mobile number" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                                            readOnly={isReadOnly}
-                                            maxLength={10}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                    {/* Row 6 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.first_mobile_number_dialing_code_plus_number" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="First Mobile No"
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder="Enter 10-digit mobile number" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                                    readOnly={isReadOnly}
+                                    maxLength={10}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.telephone_dailing" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Telephone Dailing</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter 10-digit telephone number" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                                            readOnly={isReadOnly}
-                                            maxLength={10}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                    <FormField 
+                        control={control} 
+                        name="address_details.first_telephone" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="First Telephone"
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder="Enter 10-digit telephone number" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                                    readOnly={isReadOnly}
+                                    maxLength={10}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.primary_email" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Primary Email</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter primary email address" 
-                                            {...field} 
-                                            readOnly={isReadOnly}
-                                            maxLength={60}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
-                    </div>
+                    {/* Row 7 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.telephone_dailing" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Telephone Dailing"
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder="Enter 10-digit telephone number" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                                    readOnly={isReadOnly}
+                                    maxLength={10}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                    {/* Right Column */}
-                    <div className="space-y-4">
-                        <FormField 
-                            control={control} 
-                            name="address_details.street2" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Street 2</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter Street 2 (Optional)" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
-                                            readOnly={isReadOnly}
-                                            maxLength={35}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                    {/* Empty cell for row 7 right alignment */}
+                    <div className="hidden md:block"></div>
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.street4" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Street 4</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter Street 4 (Optional)" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
-                                            readOnly={isReadOnly}
-                                            maxLength={35}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
+                    {/* Row 8 */}
+                    <FormField 
+                        control={control} 
+                        name="address_details.primary_email" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Primary Email"
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder="Enter primary email address" 
+                                    {...field} 
+                                    readOnly={isReadOnly}
+                                    maxLength={60}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
 
-                        <FormField 
-                            control={control} 
-                            name="address_details.district" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">District</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter District (Optional)" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
-                                            readOnly={isReadOnly}
-                                            maxLength={35}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
-
-                        <FormField 
-                            control={control} 
-                            name="address_details.city" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">City <span className="text-red-500">*</span></FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter City" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(formatAddressValue(e.target.value))}
-                                            readOnly={isReadOnly}
-                                            maxLength={35}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
-
-                        <FormField 
-                            control={control} 
-                            name="address_details.region" 
-                            render={({ field }) => {
-                                const showAsInput = filteredRegions.length === 1 && countryKey;
-                                
-                                // Find matching value for region
-                                const matchingValue = useMemo(() => {
-                                    if (!field.value) return "";
-                                    const option = filteredRegions.find(
-                                        opt => opt.value === field.value || opt.label === field.value
-                                    );
-                                    return option ? option.value : field.value;
-                                }, [field.value, filteredRegions]);
-
-                                return (
-                                    <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                        <FormLabel className="text-[13px] font-semibold text-foreground">Region <span className="text-red-500">*</span></FormLabel>
-                                        {showAsInput ? (
-                                            <FormControl>
-                                                <Input 
-                                                    value={filteredRegions[0].label}
-                                                    readOnly
-                                                    className="h-10 font-semibold text-[13px] bg-muted cursor-not-allowed"
-                                                />
-                                            </FormControl>
-                                        ) : (
-                                            <Select 
-                                                onValueChange={(val) => {
-                                                    field.onChange(val);
-                                                    trigger("address_details.region");
-                                                }} 
-                                                value={matchingValue || ""}
-                                                disabled={isReadOnly || !countryKey}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly || !countryKey ? "bg-muted cursor-not-allowed" : ""}`}>
-                                                        <SelectValue placeholder={countryKey ? "Select Region" : "Select Country first"} />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {filteredRegions.map(opt => (
-                                                        <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                        <FormMessage className="text-[10px]" />
-                                    </FormItem>
-                                );
-                            }} 
-                        />
-
-                        <FormField 
-                            control={control} 
-                            name="address_details.first_telephone" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">First Telephone</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter 10-digit telephone number" 
-                                            {...field} 
-                                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                                            readOnly={isReadOnly}
-                                            maxLength={10}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
-
-                        <div className="h-12 hidden md:block"></div>
-
-                        <FormField 
-                            control={control} 
-                            name="address_details.secondary_email" 
-                            render={({ field }) => (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">Secondary Email</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Enter secondary email address" 
-                                            {...field} 
-                                            readOnly={isReadOnly}
-                                            maxLength={60}
-                                            className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                            )} 
-                        />
-                    </div>
+                    <FormField 
+                        control={control} 
+                        name="address_details.secondary_email" 
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="Secondary Email"
+                                error={fieldState.error}
+                            >
+                                <Input 
+                                    placeholder="Enter secondary email address" 
+                                    {...field} 
+                                    readOnly={isReadOnly}
+                                    maxLength={60}
+                                    className={`h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
+                                />
+                            </FormInputWrapper>
+                        )} 
+                    />
                 </div>
             </CardContent>
         </>

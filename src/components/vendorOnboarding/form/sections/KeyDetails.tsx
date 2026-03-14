@@ -1,10 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormField, FormControl } from "@/components/ui/form";
+import FormInputWrapper from "../FormInputWrapper";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Upload, X, Loader2, Paperclip, CheckCircle2 } from "lucide-react";
+import { Upload, X, Loader2 } from "lucide-react";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import { toast } from "sonner";
@@ -115,17 +116,22 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
         }
     };
 
-    // Helper for Inline File Field
     const FileInputWrapper = ({ 
         attachmentName,
         fieldName,
         children, 
-        isDisabled 
+        isDisabled,
+        label,
+        isRequired,
+        error
     }: { 
         attachmentName: keyof VendorFormValues['attachments'], 
         fieldName: string,
         children: React.ReactNode,
-        isDisabled: boolean
+        isDisabled: boolean,
+        label: string,
+        isRequired?: boolean,
+        error?: any
     }) => {
         const fileInputRef = useRef<HTMLInputElement>(null);
         const [isUploading, setIsUploading] = useState(false);
@@ -165,7 +171,15 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
         };
 
         return (
-            <div className="space-y-1">
+            <FormInputWrapper 
+                label={label}
+                required={isRequired}
+                error={error}
+                fileName={attachment?.file_name}
+                fileUrl={attachment?.file_url}
+                helperText={!attachment?.file_name && showUploadIcon && !isDisabled && !isReadOnly ? 
+                    (isMandatory ? "File upload required" : "File upload optional") : undefined}
+            >
                 <div className="relative">
                     {children}
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
@@ -189,34 +203,15 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 />
                             )
                         )}
+                        {attachment?.file_name && !isReadOnly && !isDisabled && (
+                            <X 
+                                className="h-3.5 w-3.5 cursor-pointer text-red-500 hover:text-red-600 transition-colors ml-1" 
+                                onClick={removeFile}
+                            />
+                        )}
                     </div>
                 </div>
-                
-                {/* File Status / Display Area */}
-                <div className="min-h-[20px] flex items-center mt-1">
-                    {attachment?.file_name ? (
-                        <div className="flex items-center gap-2 group">
-                            <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                            <span className="text-[12px] text-green-600 font-medium truncate max-w-[200px]">{attachment.file_name}</span>
-                            {!isReadOnly && !isDisabled && (
-                                <X 
-                                    className="h-3.5 w-3.5 cursor-pointer text-red-500 hover:text-red-600 transition-colors ml-1" 
-                                    onClick={removeFile}
-                                />
-                            )}
-                        </div>
-                    ) : (
-                        showUploadIcon && !isDisabled && !isReadOnly && (
-                            <div className="flex items-center gap-1.5 text-muted-foreground/80">
-                                <Paperclip className="h-3 w-3" />
-                                <p className="text-[11px] italic">
-                                    {isMandatory ? "File upload required" : "File upload optional"}
-                                </p>
-                            </div>
-                        )
-                    )}
-                </div>
-            </div>
+            </FormInputWrapper>
         );
     };
 
@@ -226,92 +221,97 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                 <CardTitle className="text-base font-bold">Key Details</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 items-start">
-                    {/* Top Row: GSTIN (Left) & PAN Number (Right) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 items-start">
+                    {/* Row 1: GSTIN & PAN */}
                     <FormField
                         control={control}
                         name="key_details.gstin"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                <FormLabel className="text-[13px] font-semibold text-foreground">
-                                    Tax Number 3 (GSTIN) 
-                                    {gstinRequirement === "Registered" && <span className="text-red-500 ml-1">*</span>}
-                                </FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FileInputWrapper 
+                                attachmentName="gstin_attachment" 
+                                fieldName="gstin" 
+                                isDisabled={isStep1ReadOnly}
+                                label="Tax Number 3 (GSTIN)"
+                                isRequired={gstinRequirement === "Registered"}
+                                error={fieldState.error}
+                            >
                                 <FormControl>
-                                    <FileInputWrapper attachmentName="gstin_attachment" fieldName="gstin" isDisabled={isStep1ReadOnly}>
-                                        <Input 
-                                            placeholder="Enter GSTIN Number" 
-                                            {...field} 
-                                            value={field.value || ""}
-                                            readOnly={isStep1ReadOnly} 
-                                            className={`h-10 font-semibold text-[13px] pr-10 ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
-                                            maxLength={15} 
-                                        />
-                                    </FileInputWrapper>
+                                    <Input 
+                                        placeholder="Enter GSTIN Number" 
+                                        {...field} 
+                                        value={field.value || ""}
+                                        readOnly={isStep1ReadOnly} 
+                                        className={`h-10 font-semibold text-[13px] pr-10 ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
+                                        maxLength={15} 
+                                    />
                                 </FormControl>
-                                <FormMessage className="text-[10px]" />
-                            </FormItem>
+                            </FileInputWrapper>
                         )}
                     />
 
                     <FormField
                         control={control}
                         name="key_details.pan_number"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                <FormLabel className="text-[13px] font-semibold text-foreground">
-                                    PAN Number <span className="text-red-500 ml-1">*</span>
-                                </FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FileInputWrapper 
+                                attachmentName="pan_attachment" 
+                                fieldName="pan_number" 
+                                isDisabled={isStep1ReadOnly}
+                                label="PAN Number"
+                                isRequired={true}
+                                error={fieldState.error}
+                            >
                                 <FormControl>
-                                    <FileInputWrapper attachmentName="pan_attachment" fieldName="pan_number" isDisabled={isStep1ReadOnly}>
-                                        <Input 
-                                            placeholder="Enter PAN Number" 
-                                            {...field} 
-                                            value={field.value || ""}
-                                            readOnly={isStep1ReadOnly} 
-                                            className={`h-10 font-semibold text-[13px] pr-10 ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
-                                            maxLength={10} 
-                                        />
-                                    </FileInputWrapper>
+                                    <Input 
+                                        placeholder="Enter PAN Number" 
+                                        {...field} 
+                                        value={field.value || ""}
+                                        readOnly={isStep1ReadOnly} 
+                                        className={`h-10 font-semibold text-[13px] pr-10 ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
+                                        maxLength={10} 
+                                    />
                                 </FormControl>
-                                <FormMessage className="text-[10px]" />
-                            </FormItem>
+                            </FileInputWrapper>
                         )}
                     />
 
-                    {/* Middle Row: CIN Number (Left) & MSME Status (Right) */}
+                    {/* Row 2: CIN Number & MSME Status */}
                     <FormField
                         control={control}
                         name="key_details.cin_number"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                <FormLabel className="text-[13px] font-semibold text-foreground">
-                                    CIN Number {isCinMandatory && <span className="text-red-500 ml-1">*</span>}
-                                </FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FileInputWrapper 
+                                attachmentName="cin_attachment" 
+                                fieldName="cin_number" 
+                                isDisabled={isReadOnly || isEmployee}
+                                label="CIN Number"
+                                isRequired={isCinMandatory}
+                                error={fieldState.error}
+                            >
                                 <FormControl>
-                                    <FileInputWrapper attachmentName="cin_attachment" fieldName="cin_number" isDisabled={isReadOnly || isEmployee}>
-                                        <Input 
-                                            placeholder={isFirm ? "AAG-12345" : (isCompany ? "L12345MH2024PLC123456" : "NA")} 
-                                            {...field} 
-                                            value={field.value || ""}
-                                            readOnly={isReadOnly || isEmployee}
-                                            onChange={(e) => handleCINChange(e.target.value)}
-                                            className={`h-10 font-semibold text-[13px] pr-10 ${(isReadOnly || isEmployee) ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
-                                            maxLength={isCompany ? 21 : (isFirm ? 9 : 21)}
-                                        />
-                                    </FileInputWrapper>
+                                    <Input 
+                                        placeholder={isFirm ? "AAG-12345" : (isCompany ? "L12345MH2024PLC123456" : "NA")} 
+                                        {...field} 
+                                        value={field.value || ""}
+                                        readOnly={isReadOnly || isEmployee}
+                                        onChange={(e) => handleCINChange(e.target.value)}
+                                        className={`h-10 font-semibold text-[13px] pr-10 ${(isReadOnly || isEmployee) ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
+                                        maxLength={isCompany ? 21 : (isFirm ? 9 : 21)}
+                                    />
                                 </FormControl>
-                                <FormMessage className="text-[10px]" />
-                            </FormItem>
+                            </FileInputWrapper>
                         )}
                     />
 
                     <FormField
                         control={control}
                         name="key_details.msme_status"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                <FormLabel className="text-[13px] font-semibold text-foreground">MSME Status <span className="text-red-500 ml-1">*</span></FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FormInputWrapper 
+                                label="MSME Status"
+                                required
+                                error={fieldState.error}
+                            >
                                 <Select onValueChange={(val) => {
                                     field.onChange(val);
                                     if (val.startsWith("Z002")) setValue("key_details.credit_information_number_msme", "NA");
@@ -327,57 +327,60 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage className="text-[10px]" />
-                            </FormItem>
+                            </FormInputWrapper>
                         )}
                     />
 
-                    {/* Bottom Row: PAN Aadhar Linked Status (Left) & MSME Number (Right) */}
+                    {/* Row 3: PAN Aadhar Linked Status & MSME Number */}
                     <FormField
                         control={control}
                         name="key_details.pan_aadhar_linked_status"
-                        render={({ field }) => (
-                            <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                <FormLabel className="text-[13px] font-semibold text-foreground">PAN Aadhar Linked Status <span className="text-red-500 ml-1">*</span></FormLabel>
+                        render={({ field, fieldState }) => (
+                            <FileInputWrapper 
+                                attachmentName="pan_aadhar_linkage_attachment" 
+                                fieldName="pan_aadhar_linked_status" 
+                                isDisabled={isReadOnly}
+                                label="PAN Aadhar Linked Status"
+                                isRequired={true}
+                                error={fieldState.error}
+                            >
                                 <FormControl>
-                                    <FileInputWrapper attachmentName="pan_aadhar_linkage_attachment" fieldName="pan_aadhar_linked_status" isDisabled={isReadOnly}>
-                                        <Input 
-                                            value={field.value === "1" ? "1 - Pan and Aadhar Linked" : (field.value === "2" ? "2 - Not Applicable" : "")} 
-                                            readOnly 
-                                            placeholder="Auto-calculated"
-                                            className="h-10 font-semibold text-[13px] bg-muted cursor-not-allowed" 
-                                        />
-                                    </FileInputWrapper>
+                                    <Input 
+                                        value={field.value === "1" ? "1 - Pan and Aadhar Linked" : (field.value === "2" ? "2 - Not Applicable" : "")} 
+                                        readOnly 
+                                        placeholder="Auto-calculated"
+                                        className="h-10 font-semibold text-[13px] bg-muted cursor-not-allowed" 
+                                    />
                                 </FormControl>
-                                <FormMessage className="text-[10px]" />
-                            </FormItem>
+                            </FileInputWrapper>
                         )}
                     />
 
                     <FormField
                         control={control}
                         name="key_details.credit_information_number_msme"
-                        render={({ field }) => {
+                        render={({ field, fieldState }) => {
                             const isNonMsme = msmeStatus?.startsWith("Z002");
                             return (
-                                <FormItem className="w-full flex flex-col justify-start gap-1.5">
-                                    <FormLabel className="text-[13px] font-semibold text-foreground">
-                                        Credit Information Number (MSME) {!isNonMsme && <span className="text-red-500 ml-1">*</span>}
-                                    </FormLabel>
+                                <FileInputWrapper 
+                                    attachmentName="msme_attachment" 
+                                    fieldName="msme_number" 
+                                    isDisabled={!!(isReadOnly || isNonMsme)}
+                                    label="Credit Information Number (MSME)"
+                                    isRequired={!isNonMsme}
+                                    error={fieldState.error}
+                                >
                                     <FormControl>
-                                        <FileInputWrapper attachmentName="msme_attachment" fieldName="msme_number" isDisabled={!!(isReadOnly || isNonMsme)}>
-                                            <Input 
-                                                placeholder={isNonMsme ? "NA" : "Enter 13 digits MSME number (eg. XY-12-5643256)"} 
-                                                {...field} 
-                                                value={field.value || ""}
-                                                readOnly={isReadOnly || isNonMsme}
-                                                className={`h-10 font-semibold text-[13px] pr-10 ${(isReadOnly || isNonMsme) ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
-                                                maxLength={13}
-                                            />
-                                        </FileInputWrapper>
+                                        <Input 
+                                            placeholder={isNonMsme ? "NA" : "Enter 13 digits MSME number (eg. XY-12-5643256)"} 
+                                            {...field} 
+                                            value={field.value || ""}
+                                            readOnly={isReadOnly || isNonMsme}
+                                            className={`h-10 font-semibold text-[13px] pr-10 ${(isReadOnly || isNonMsme) ? "bg-muted cursor-not-allowed" : ""} uppercase`} 
+                                            maxLength={13}
+                                        />
                                     </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
+                                </FileInputWrapper>
                             );
                         }}
                     />

@@ -450,3 +450,102 @@ export const getRegionsForCountry = (
     
     return regions;
 };
+
+/**
+ * Helper function to check if bank details are mandatory based on vendor account group
+ * Uses the vendorAccPlanningGroup mapping data from LOVs
+ */
+export const isBankDetailsMandatory = (
+    vendorAccountGroup: string,
+    vendorAccPlanningGroup: Array<{
+        vendor_account_group: string;
+        planning_group: string;
+        bank_details_mandatory: string;
+    }>
+): boolean => {
+    if (!vendorAccountGroup || !vendorAccPlanningGroup || vendorAccPlanningGroup.length === 0) return false;
+
+    // Try exact match first
+    const exactMatch = vendorAccPlanningGroup.find(
+        (item) => item.vendor_account_group === vendorAccountGroup
+    );
+
+    if (exactMatch) {
+        return exactMatch.bank_details_mandatory === "Yes";
+    }
+
+    // Try extracting code (V001 from V001 - Name)
+    if (vendorAccountGroup.includes(" - ")) {
+        const code = vendorAccountGroup.split(" - ")[0];
+        const codeMatch = vendorAccPlanningGroup.find(
+            (item) => item.vendor_account_group === code
+        );
+        if (codeMatch) return codeMatch.bank_details_mandatory === "Yes";
+    }
+
+    return false;
+};
+
+/**
+ * Reconciliation Account Mappings by Vendor Group Code
+ */
+export const RECONCILIATION_ACCOUNT_BY_VENDOR_GROUP: Record<string, { value: string; displayLabel: string }> = {
+    V001: { value: "1000090000", displayLabel: "1000090000 - DOMESTIC VENDOR- MATERIAL" },
+    V002: { value: "1000090010", displayLabel: "1000090010 - FOREIGN VENDOR-MATERIAL" },
+    V003: { value: "1000090020", displayLabel: "1000090020 - CONTRACTOR / SUBCONTRACTOR VENDOR" },
+    V005: { value: "1000090040", displayLabel: "1000090040 - VENDOR FOREIGN - SERVICES" },
+    V006: { value: "1000090050", displayLabel: "1000090050 - VENDOR DOMESTIC - ASSETS" },
+    V007: { value: "1000090060", displayLabel: "1000090060 - VENDOR FOREIGN - ASSETS" },
+    V008: { value: "1000090070", displayLabel: "1000090070 - VENDOR RELATED PARTY" },
+    V009: { value: "1000090080", displayLabel: "1000090080 - VENDOR LABOUR+MATERIAL" },
+    V010: { value: "1000090110", displayLabel: "1000090110 - VENDOR - EMPLOYEE" },
+    V012: { value: "1000032299", displayLabel: "1000032299 - MOTOR CAR LOANS" },
+    V013: { value: "1000032599", displayLabel: "1000032599 - EQUIPMENT FINANCE LOANS" },
+    V014: { value: "1000031999", displayLabel: "1000031999 - TERM LOANS" },
+};
+
+export const getReconciliationMapping = (vendorAccountGroup: string) => {
+    if (!vendorAccountGroup) return null;
+    const code = vendorAccountGroup.split(" - ")[0];
+    return RECONCILIATION_ACCOUNT_BY_VENDOR_GROUP[code] || null;
+};
+
+export const hasMappedReconciliationAccount = (vendorAccountGroup: string) => {
+    return !!getReconciliationMapping(vendorAccountGroup);
+};
+
+export const calculateIndicatorSubjectToWithholdTax = (withholdingTaxType: string): string => {
+    return withholdingTaxType ? "Yes" : "No";
+};
+
+export const calculateGroupForCalculationSchema = (
+    typeOfVendor: string,
+    vendorGroup: string
+): string => {
+    if (typeOfVendor !== "XK01") return "";
+    const code = vendorGroup ? vendorGroup.split(" - ")[0] : "";
+    return ["V002", "V005", "V007"].includes(code) ? "04" : "03";
+};
+
+export const calculateVendorClassificationForGST = (gstin: string): string => {
+    if (!gstin || gstin.toLowerCase().includes("not registered") || gstin.toLowerCase().includes("na")) {
+        return "0";
+    }
+    return "";
+};
+
+export const calculateGRBasedInvoiceVerification = (typeOfVendor: string): string => {
+    return typeOfVendor === "XK01" ? "Yes" : "No";
+};
+
+export const calculateServiceBasedInvoiceVerification = (typeOfVendor: string): string => {
+    return typeOfVendor === "XK01" ? "Yes" : "No";
+};
+
+export const calculateConfirmationControlKey = (
+    typeOfVendor: string,
+    orderAcknowledgment: string
+): string => {
+    if (typeOfVendor !== "XK01") return "";
+    return orderAcknowledgment === "Yes" ? "0001" : "";
+};
