@@ -39,15 +39,17 @@ const getFormAuthToken = async (): Promise<string | null> => {
  * Helper to make authenticated API requests specifically for form data endpoints.
  * Handles token injection and 401 retries.
  */
-const callFormApi = async (endpoint: string, data: any, method: 'post' | 'put' = 'post'): Promise<APIResponse<any>> => {
+const callFormApi = async (endpoint: string, data: any, method: 'post' | 'put' | 'delete' = 'post'): Promise<APIResponse<any>> => {
     const makeRequest = async () => {
         let token = sessionStorage.getItem("form_token");
         if (!token) {
             token = await getFormAuthToken();
         }
         
-        const axiosCall = method === 'put' ? formApi.put : formApi.post;
-        return await axiosCall(`${BASE_URL}${endpoint}`, data, {
+        return await formApi.request({
+            url: `${BASE_URL}${endpoint}`,
+            method: method,
+            data: data,
             headers: { 
                 ...COMMON_HEADERS,
                 "authorize_token": token || "",
@@ -95,7 +97,7 @@ export const updateFormData = async (data: any): Promise<APIResponse<any>> => {
 };
 
 export const deleteFormData = async (data: any): Promise<APIResponse<any>> => {
-    return callFormApi("/delete_form_data_api", data);
+    return callFormApi("/delete_form_data_api", data, "delete");
 };
 
 export const getFormLovs = async (data: { form_name: string; org_name: string }): Promise<APIResponse<any>> => {
