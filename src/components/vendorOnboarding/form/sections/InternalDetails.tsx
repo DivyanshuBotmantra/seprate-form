@@ -132,7 +132,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                             onValueChange={field.onChange}
                                             disabled={isReadOnly}
                                             placeholder="Choose reconciliation account"
-                                            searchPlaceholder="Search accounts..."
+                                            searchPlaceholder="Search reconciliation accounts..."
                                         />
                                     )}
                                 </FormInputWrapper>
@@ -175,7 +175,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     onValueChange={field.onChange}
                                     disabled={isReadOnly}
                                     placeholder="Choose withholding tax type"
-                                    searchPlaceholder="Search tax types..."
+                                    searchPlaceholder="Search withholding tax types..."
                                 />
                             </FormInputWrapper>
                         )} 
@@ -195,7 +195,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     onValueChange={field.onChange}
                                     disabled={isReadOnly}
                                     placeholder="Choose withholding tax type"
-                                    searchPlaceholder="Search tax types..."
+                                    searchPlaceholder="Search withholding tax types..."
                                 />
                             </FormInputWrapper>
                         )} 
@@ -215,7 +215,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     <Input 
                                         {...field}
                                         readOnly={isXK01 || isReadOnly}
-                                        placeholder={isXK01 ? "Auto-filled from company code" : "Select organization"}
+                                        placeholder={isXK01 ? "Auto-filled from company code" : "Choose purchasing organization"}
                                         className={`h-10 font-semibold text-[13px] ${isXK01 || isReadOnly ? "bg-muted cursor-not-allowed border-dashed" : "bg-background border-border"}`}
                                     />
                                 </FormControl>
@@ -237,7 +237,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     disabled={isReadOnly || (!isForeign && !!field.value)}
-                                    placeholder="Select currency"
+                                    placeholder="Choose currency"
                                     searchPlaceholder="Search currencies..."
                                 />
                             </FormInputWrapper>

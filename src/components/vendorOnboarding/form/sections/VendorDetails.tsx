@@ -59,8 +59,8 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     disabled={isStep1ReadOnly}
-                                    placeholder="Select group"
-                                    searchPlaceholder="Search account group..."
+                                    placeholder="Choose vendor account group"
+                                    searchPlaceholder="Search vendor account groups..."
                                 />
                             </FormInputWrapper>
                         )}
@@ -101,7 +101,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     disabled={isReadOnly}
-                                    placeholder="Select code"
+                                    placeholder="Choose company code"
                                     searchPlaceholder="Search company codes..."
                                 />
                             </FormInputWrapper>
@@ -122,7 +122,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     disabled={isReadOnly}
-                                    placeholder="Select title"
+                                    placeholder="Choose title"
                                     searchPlaceholder="Search titles..."
                                 />
                             </FormInputWrapper>
@@ -140,7 +140,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 error={fieldState.error}
                             >
                                 <Input
-                                    placeholder="Enter legal vendor name"
+                                    placeholder="Enter vendor name"
                                     {...field}
                                     readOnly={isStep1ReadOnly}
                                     className={`h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""}`}
@@ -182,7 +182,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 error={fieldState.error}
                             >
                                 <Input
-                                    placeholder="Short identifier"
+                                    placeholder="Enter search term"
                                     {...field}
                                     maxLength={18}
                                     readOnly={isReadOnly}
@@ -207,7 +207,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     disabled={isReadOnly}
-                                    placeholder="Select terms"
+                                    placeholder="Choose payment terms"
                                     searchPlaceholder="Search payment terms..."
                                 />
                             </FormInputWrapper>

@@ -13,6 +13,7 @@ export const VENDOR_FORM_DEFAULTS: Partial<VendorFormValues> = {
     vendor_details: {
         vendor_account_group: "",
         company_code: "",
+        title_text: "",
         name1: "",
         name2: "",
         terms_of_payment_key: "",
