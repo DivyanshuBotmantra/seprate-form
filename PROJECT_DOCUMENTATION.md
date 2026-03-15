@@ -85,9 +85,11 @@ d:/seprate-form/
 - **Validation**: Centralized `schema.ts` using Zod. Validation is decoupled from the UI components.
 - **Mapping**: Dedicated `mapper.ts` handles the complex transformation from UI fields to the nested JSON structure required by the API.
 - **Improvements**:
-    - **Strong Typing**: Full TypeScript support for form data.
-    - **Reusability**: Sections can be easily rearranged or reused in a "View Mode".
+    - **Strong Typing**: Full TypeScript support for form data via Zod.
+    - **Reusability**: Sections like `FileInputWrapper` encapsulate complex upload/validation logic.
+    - **Advanced Selects**: Integration of `SearchableSelect` for large LOVs (like Withholding Tax types).
     - **Performance**: Reduced re-renders by splitting the form into smaller components.
+    - **Compact System Fields**: The `SystemFields` section is refactored for readability by removing `FormInputWrapper` for auto-calculated fields.
 
 ---
 
@@ -103,8 +105,9 @@ The primary module consists of several sub-sections:
 6.  **Internal Details**: Purchasing organization, currency, and payment terms.
 7.  **Attachments**: Handling of mandatory and optional document uploads.
 
-### **File Sync Mechanism**
-- **Temporary Upload**: Files are uploaded to a temporary SAS URL.
+### **File Sync & Upload Mechanism**
+- **Temporary Upload**: Files are uploaded to a temporary SAS URL via `FileInputWrapper`.
+- **Visual Validation**: Icons color-code the status (Red for missing mandatory, Blue for optional).
 - **Safe Delete**: Deletions are buffered in the UI and only physically deleted from storage after a successful "Save" of the metadata.
 
 ---

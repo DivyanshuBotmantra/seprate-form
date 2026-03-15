@@ -26,23 +26,18 @@ The vendor onboarding form has been refactored from a messy, prop-drilling-heavy
     - **WT Indicator -> Receipt Type**: Automatically derived based on tax configuration.
 
 ### 5. Premium UI Components
-- **Dynamic Selects**: Hand-coded dropdowns replaced with accessible, theme-aware `Select` components.
+- **Dynamic Selects**: Hand-coded dropdowns replaced with accessible, theme-aware `Select` and `SearchableSelect` components.
 - **Section Isolation**: Each form section is a clean, focused component that consumes form state via `useFormContext`.
+- **FileInputWrapper**: A unified UI wrapper that handles file uploads, icon states (Red/Blue), and mandatory indicators (`⚓`/`📎`).
 
-## Recommendations for Future Work
-
-### 1. File Upload Lifecycle
-- **Refinement**: implement a unified `useVendorFileUpload` hook that handles temporary uploads, draft preservation, and final commitment on submit.
-- **Validation**: Add server-side size/type validation to the Zod schema for attachments.
+### 1. SAP Integration Testing
+- **Validation**: Create a mock API suite that mimics SAP's various error responses (e.g., "PAN already exists") to ensure the UI handles external business errors gracefully.
 
 ### 2. Error Focus Protocol
 - **UX Improvement**: Implement a helper that automatically scrolls to and focuses the first field with a validation error across tabs.
 
-### 3. Draft Auto-Save
+### 3. Draft Auto-Save Enhancement
 - **Reliability**: Add a debounce effect to save the form state to the backend/local storage every 30 seconds to prevent data loss.
-
-### 4. SAP Integration Testing
-- **Validation**: Create a mock API suite that mimics SAP's various error responses (e.g., "PAN already exists") to ensure the UI handles external business errors gracefully.
 
 ---
 *Refactored with ❤️ by Antigravity*

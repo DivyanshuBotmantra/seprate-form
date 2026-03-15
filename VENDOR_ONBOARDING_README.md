@@ -89,12 +89,17 @@ The system implements a **Safe-Sync** mechanism for files:
 - **IFSC**: `^[A-Z]{4}0[A-Z0-9]{6}$`
 
 ### 2. Conditional Logic (CIN Number)
-- **If PAN 4th char is 'C'**: CIN is mandatory (21-char format).
-- **If PAN 4th char is 'F' AND Name contains "LLP"**: CIN is mandatory (5-9 char format).
-- **Otherwise**: CIN is Not Applicable (NA).
+- **Company Vendors**: If PAN 4th char is 'C', CIN is mandatory (21-char format).
+- **Firm/LLP Vendors**: If PAN 4th char is 'F' AND Vendor Name contains "LLP", CIN is mandatory (Length between 5 and 9 characters).
+- **Otherwise**: CIN field remains "Not Applicable" (NA).
 
-### 3. Withholding Tax Rules
-- Calculated dynamically based on **Vendor Group** (V001, V003, V009) and the **4th character of PAN** (C implies Company, F implies Individual, etc.).
+### 3. Attachment Validation (superRefine)
+The system uses a custom `superRefine` layer in Zod to enforce physical document uploads:
+- **Mandatory Condition**: An attachment is required if its corresponding text field (e.g., GSTIN, PAN, MSME) is filled with a valid value and the field's logic dictates it is mandatory.
+- **Exclusion**: Documents are NOT required if the field value is "NA" or "Not Applicable".
+- **Dynamic Indicators**: 
+    - ⚓ **Mandatory**: Red upload icon + anchor text.
+    - 📎 **Optional**: Blue upload icon + clip text.
 
 ---
 

@@ -64,11 +64,10 @@ This document summarizes the analysis of the existing "Real Code" (Production) l
 ---
 
 ## 4. Next Steps for Development
-
-1.  **Schema Definition**: Complete the `schema.ts` with all the "Bible" validation rules.
-2.  **Modular Sections**: Build out the remaining sections (Address, Internal, System) using RHF.
-3.  **Integration**: Wire the "Step 1" logic into the `VendorFormContainer` so the transition is seamless.
-4.  **Final Polish**: Implement the "SAS Swap" logic inside the submission handler.
+1. [x] **Schema Definition**: Completed `schema.ts` with logic for CIN formats, GST validation, and attachment `superRefine`.
+2. [x] **Modular Sections**: Built all sections (Key Details, Bank, Address, System, Internal) with RHF and `useFormContext`.
+3. [x] **UI Polish**: Implemented compact `SystemFields` and dynamic `SearchableSelect`.
+4. [ ] **Final Integration**: Wiring the "Step 1" transition logic and final submit redirection.
 
 ---
-**Status**: Ready to proceed with Step 1 of the refactor.
+**Status**: Core refactoring phase complete. UI and Validation parity with the legacy system achieved. Proceeding to final integration and testing.
