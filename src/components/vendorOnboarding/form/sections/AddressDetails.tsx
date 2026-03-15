@@ -2,12 +2,12 @@ import { useEffect, useMemo } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { FormField, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import { getRegionsForCountry } from "@/components/vendorOnboarding/utils/lov-utils";
 import FormInputWrapper from "../FormInputWrapper";
+import SearchableSelect from "@/components/common/search-select";
 
 const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
     const { control, setValue, trigger } = useFormContext<VendorFormValues>();
@@ -262,26 +262,18 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     required
                                     error={fieldState.error}
                                 >
-                                    <Select 
+                                    <SearchableSelect
+                                        options={lovData?.countryOptions || []}
+                                        value={matchingValue || ""}
                                         onValueChange={(val) => {
                                             field.onChange(val);
                                             setValue("address_details.region", ""); 
                                             trigger("address_details.country_key");
-                                        }} 
-                                        value={matchingValue || ""}
+                                        }}
                                         disabled={isCountryReadOnly}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isCountryReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
-                                                <SelectValue placeholder="Select Country" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {(lovData?.countryOptions || []).map(opt => (
-                                                <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                        placeholder="Select Country"
+                                        searchPlaceholder="Search countries..."
+                                    />
                                 </FormInputWrapper>
                             );
                         }} 
@@ -315,25 +307,17 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                             />
                                         </FormControl>
                                     ) : (
-                                        <Select 
+                                        <SearchableSelect
+                                            options={filteredRegions}
+                                            value={matchingValue || ""}
                                             onValueChange={(val) => {
                                                 field.onChange(val);
                                                 trigger("address_details.region");
-                                            }} 
-                                            value={matchingValue || ""}
+                                            }}
                                             disabled={isReadOnly || !countryKey}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly || !countryKey ? "bg-muted cursor-not-allowed" : ""}`}>
-                                                    <SelectValue placeholder={countryKey ? "Select Region" : "Select Country first"} />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {filteredRegions.map(opt => (
-                                                    <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                            placeholder={countryKey ? "Select Region" : "Select Country first"}
+                                            searchPlaceholder="Search regions..."
+                                        />
                                     )}
                                 </FormInputWrapper>
                             );

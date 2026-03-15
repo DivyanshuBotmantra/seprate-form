@@ -6,7 +6,6 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createFormData, getFormLovs } from "@/services/vendor-onboarding/form-data";
@@ -15,6 +14,7 @@ import { FIELD_DEPENDENCIES, createInitialDraftPayload, REGEX, FORMDATA_CONFIG }
 import FormInputWrapper from "../../components/vendorOnboarding/form/FormInputWrapper";
 import { mapAPILOVToDropdown } from "@/components/vendor/lov-utils";
 import type { LOVData } from "@/components/vendor/types";
+import SearchableSelect from "@/components/common/search-select";
 
 const step1Schema = z.object({
     type_of_vendor: z.enum(["Employee", "XK01", "FK01"]),
@@ -167,9 +167,6 @@ const VendorFormStep1 = () => {
         return () => clearTimeout(timer);
     }, [typeOfVendor, lovData, setValue, form]);
 
-
-
-
     // Logic: Auto-extract PAN from GSTIN
     useEffect(() => {
         if (gstinValue && gstinValue.length >= FIELD_DEPENDENCIES.GSTIN_TO_PAN.end && REGEX.GSTIN.test(gstinValue)) {
@@ -313,23 +310,19 @@ const VendorFormStep1 = () => {
                                                     required
                                                     error={fieldState.error}
                                                 >
-                                                    <Select onValueChange={(val) => {
-                                                        field.onChange(val);
-                                                        form.clearErrors("vendor_account_group");
-                                                    }} value={field.value} disabled={typeOfVendor === "Employee"}>
-                                                        <FormControl>
-                                                            <SelectTrigger className={`w-full h-10 text-[13px] font-semibold ${typeOfVendor === "Employee" ? "bg-muted cursor-not-allowed" : "bg-background border-border"}`}>
-                                                                <SelectValue placeholder="Choose vendor group" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {(lovData?.vendorAccountGroup || [])
-                                                                .filter(opt => typeOfVendor === "Employee" ? opt.value.includes("V010") : !opt.value.includes("V010"))
-                                                                .map(opt => (
-                                                                    <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                                                ))}
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <SearchableSelect
+                                                        options={(lovData?.vendorAccountGroup || [])
+                                                            .filter(opt => typeOfVendor === "Employee" ? opt.value.includes("V010") : !opt.value.includes("V010"))
+                                                        }
+                                                        value={field.value}
+                                                        onValueChange={(val) => {
+                                                            field.onChange(val);
+                                                            form.clearErrors("vendor_account_group");
+                                                        }}
+                                                        disabled={typeOfVendor === "Employee"}
+                                                        placeholder="Choose vendor group"
+                                                        searchPlaceholder="Search vendor group..."
+                                                    />
                                                 </FormInputWrapper>
                                             )}
                                         />
@@ -368,20 +361,19 @@ const VendorFormStep1 = () => {
                                                         required
                                                         error={fieldState.error}
                                                     >
-                                                        <Select onValueChange={(val) => {
-                                                            field.onChange(val);
-                                                            form.clearErrors("gstin_requirement");
-                                                        }} value={field.value}>
-                                                            <FormControl>
-                                                                <SelectTrigger className="w-full h-10 border-border bg-background text-[13px] font-semibold">
-                                                                    <SelectValue placeholder="Select requirement" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                <SelectItem value="Registered" className="text-[13px]">Registered</SelectItem>
-                                                                <SelectItem value="Not Registered" className="text-[13px]">Not Registered</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
+                                                        <SearchableSelect
+                                                            options={[
+                                                                { label: "Registered", value: "Registered" },
+                                                                { label: "Not Registered", value: "Not Registered" }
+                                                            ]}
+                                                            value={field.value}
+                                                            onValueChange={(val) => {
+                                                                field.onChange(val);
+                                                                form.clearErrors("gstin_requirement");
+                                                            }}
+                                                            placeholder="Select requirement"
+                                                            searchPlaceholder="Search requirement..."
+                                                        />
                                                     </FormInputWrapper>
                                                 )}
                                             />
@@ -492,4 +484,4 @@ const VendorFormStep1 = () => {
     );
 };
 
-export default VendorFormStep1;
+export default VendorFormStep1;

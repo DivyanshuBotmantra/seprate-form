@@ -3,12 +3,12 @@ import { useFormContext } from "react-hook-form";
 import { FormField, FormControl } from "@/components/ui/form";
 import FormInputWrapper from "../FormInputWrapper";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Upload, X, Loader2 } from "lucide-react";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import { toast } from "sonner";
+import SearchableSelect from "@/components/common/search-select";
 
 // Validation helper logic derived from KeyDetailsSection.tsx
 const validatePAN = (pan: string) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan);
@@ -312,21 +312,17 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 required
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={(val) => {
-                                    field.onChange(val);
-                                    if (val.startsWith("Z002")) setValue("key_details.credit_information_number_msme", "NA");
-                                }} value={field.value || ""} disabled={isReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
-                                            <SelectValue placeholder="Select Status" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.reMSMEStatus || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.reMSMEStatus || []}
+                                    value={field.value || ""}
+                                    onValueChange={(val) => {
+                                        field.onChange(val);
+                                        if (val.startsWith("Z002")) setValue("key_details.credit_information_number_msme", "NA");
+                                    }}
+                                    disabled={isReadOnly}
+                                    placeholder="Select Status"
+                                    searchPlaceholder="Search MSME status..."
+                                />
                             </FormInputWrapper>
                         )}
                     />

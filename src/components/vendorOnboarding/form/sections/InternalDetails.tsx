@@ -1,7 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { FormField, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import {
     getPlanningGroupFromVendorAccountGroup,
     getReceiptTypeFromWithholdingTax
 } from "@/components/vendor/lov-utils";
+import SearchableSelect from "@/components/common/search-select";
 
 const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
     const { control, watch, setValue } = useFormContext<VendorFormValues>();
@@ -126,18 +126,14 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                             />
                                         </FormControl>
                                     ) : (
-                                        <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
-                                            <FormControl>
-                                                <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : "bg-background border-border"}`}>
-                                                    <SelectValue placeholder="Choose reconciliation account" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {(lovData?.reconciliationAccountInGeneralLedger || []).map(opt => (
-                                                    <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <SearchableSelect
+                                            options={lovData?.reconciliationAccountInGeneralLedger || []}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                            disabled={isReadOnly}
+                                            placeholder="Choose reconciliation account"
+                                            searchPlaceholder="Search accounts..."
+                                        />
                                     )}
                                 </FormInputWrapper>
                             );
@@ -173,18 +169,14 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Indicator for with Holding Tax Type 1"
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : "bg-background border-border"}`}>
-                                            <SelectValue placeholder="Choose withholding tax type" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.indicatorForWithHoldingTaxType1 || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.indicatorForWithHoldingTaxType1 || []}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isReadOnly}
+                                    placeholder="Choose withholding tax type"
+                                    searchPlaceholder="Search tax types..."
+                                />
                             </FormInputWrapper>
                         )} 
                     />
@@ -197,18 +189,14 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Indicator for with Holding Tax Type 2"
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : "bg-background border-border"}`}>
-                                            <SelectValue placeholder="Choose withholding tax type" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.indicatorForWithHoldingTaxType2 || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.indicatorForWithHoldingTaxType2 || []}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isReadOnly}
+                                    placeholder="Choose withholding tax type"
+                                    searchPlaceholder="Search tax types..."
+                                />
                             </FormInputWrapper>
                         )} 
                     />
@@ -244,18 +232,14 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 required={isXK01}
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly || (!isForeign && !!field.value)}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly || (!isForeign && !!field.value) ? "bg-muted cursor-not-allowed border-dashed" : "bg-background border-border"}`}>
-                                            <SelectValue placeholder="Select currency" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.purchaseOrderCurrency || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.purchaseOrderCurrency || []}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isReadOnly || (!isForeign && !!field.value)}
+                                    placeholder="Select currency"
+                                    searchPlaceholder="Search currencies..."
+                                />
                             </FormInputWrapper>
                         )} 
                     />

@@ -1,13 +1,13 @@
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { FormField, FormControl } from "@/components/ui/form";
+import { FormField } from "@/components/ui/form";
 import FormInputWrapper from "../FormInputWrapper";
 import { useFormContext } from "react-hook-form";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import { useEffect } from "react";
 import { getPlanningGroupFromVendorAccountGroup } from "@/components/vendor/lov-utils";
+import SearchableSelect from "@/components/common/search-select";
 
 const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnly?: boolean; isStep1ReadOnly?: boolean }) => {
     const { control, watch, setValue } = useFormContext<VendorFormValues>();
@@ -54,18 +54,14 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 required
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isStep1ReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isStep1ReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
-                                            <SelectValue placeholder="Select group" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.vendorAccountGroup || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.vendorAccountGroup || []}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isStep1ReadOnly}
+                                    placeholder="Select group"
+                                    searchPlaceholder="Search account group..."
+                                />
                             </FormInputWrapper>
                         )}
                     />
@@ -100,18 +96,14 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 required
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
-                                            <SelectValue placeholder="Select code" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.companyCode || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.companyCode || []}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isReadOnly}
+                                    placeholder="Select code"
+                                    searchPlaceholder="Search company codes..."
+                                />
                             </FormInputWrapper>
                         )}
                     />
@@ -125,18 +117,14 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 required
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
-                                            <SelectValue placeholder="Select title" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.titleText || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.titleText || []}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isReadOnly}
+                                    placeholder="Select title"
+                                    searchPlaceholder="Search titles..."
+                                />
                             </FormInputWrapper>
                         )}
                     />
@@ -214,18 +202,14 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 required
                                 error={fieldState.error}
                             >
-                                <Select onValueChange={field.onChange} value={field.value || ""} disabled={isReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className={`w-full h-10 font-semibold text-[13px] ${isReadOnly ? "bg-muted cursor-not-allowed" : ""}`}>
-                                            <SelectValue placeholder="Select terms" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {(lovData?.termsOfPaymentKey || []).map(opt => (
-                                            <SelectItem key={opt.value} value={opt.value} className="text-[13px]">{opt.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <SearchableSelect
+                                    options={lovData?.termsOfPaymentKey || []}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isReadOnly}
+                                    placeholder="Select terms"
+                                    searchPlaceholder="Search payment terms..."
+                                />
                             </FormInputWrapper>
                         )}
                     />
