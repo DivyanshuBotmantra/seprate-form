@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm, FormProvider, useFormContext } from "react-hook-form";
+import * as RHF from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -50,7 +50,7 @@ const VendorFormContainer = () => {
 
     const { lovData, isLoadingLov } = useVendorDataLoader();
 
-    const methods = useForm<VendorFormValues>({
+    const methods = RHF.useForm<VendorFormValues>({
         resolver: zodResolver(vendorFormSchema),
         defaultValues: VENDOR_FORM_DEFAULTS as VendorFormValues,
         mode: "onBlur",
@@ -68,10 +68,10 @@ const VendorFormContainer = () => {
     return (
         <LOVProvider lovData={lovData} isLoading={isLoadingLov}>
             <FileLifecycleProvider>
-                <FormProvider {...methods}>
+                <RHF.FormProvider {...methods}>
                     <FormLogic />
                     <FormContent transId={transId} />
-                </FormProvider>
+                </RHF.FormProvider>
             </FileLifecycleProvider>
         </LOVProvider>
     );
@@ -82,7 +82,7 @@ const FormContent = ({ transId }: { transId: string | null }) => {
     const [searchParams] = useSearchParams();
     const mode = searchParams.get("mode") || "edit";
 
-    const { reset, formState, getValues, handleSubmit } = useFormContext<VendorFormValues>();
+    const { reset, formState, getValues, handleSubmit } = RHF.useFormContext<VendorFormValues>();
     const { isSubmitting, isValid } = formState;
 
     const [loading, setLoading] = useState(!!transId);
