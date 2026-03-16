@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/data-table";
 import { DataTableToolbar } from "@/components/common/table/data-table-toolbar";
-import { DeleteConfirmationModal } from "@/components/vendorOnboarding/common/delete-confirmation-modal";
+import { DeleteConfirmationModal } from "@/components/common/delete-confirmation-modal";
 import {
     getFormData,
     deleteFormData,

@@ -121,7 +121,6 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
         attachmentName,
         fieldName,
         children, 
-        isDisabled,
         label,
         isRequired,
         error,
@@ -130,7 +129,6 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
         attachmentName: keyof VendorFormValues['attachments'], 
         fieldName: string,
         children: React.ReactNode,
-        isDisabled: boolean,
         label: string,
         isRequired?: boolean,
         error?: any,
@@ -174,7 +172,7 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                 fileUrl={attachment?.file_url}
                 onRemoveFile={removeFile}
                 isReadOnly={isReadOnly}
-                helperText={!attachment?.file_name && showUploadIcon && !isDisabled && !isReadOnly ? 
+                helperText={!attachment?.file_name && showUploadIcon && !isReadOnly ? 
                     (isMandatory ? "⚓ File upload required" : "📎 File upload optional") : undefined}
             >
                 <div className="relative">
@@ -193,10 +191,10 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                             showUploadIcon && (
                                 <Upload 
                                     className={`h-4 w-4 cursor-pointer transition-colors ${
-                                        isDisabled ? "opacity-30 cursor-not-allowed" : 
+                                        isReadOnly ? "opacity-30 cursor-not-allowed" : 
                                         "text-[#C53929] hover:text-[#A62D1F]"
                                     }`}
-                                    onClick={() => !isDisabled && fileInputRef.current?.click()}
+                                    onClick={() => !isReadOnly && fileInputRef.current?.click()}
                                 />
                             )
                         )}
@@ -224,7 +222,6 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 <FileInputWrapper 
                                     attachmentName="gstin_attachment" 
                                     fieldName="gstin" 
-                                    isDisabled={isStep1ReadOnly}
                                     label="Tax Number 3 (GSTIN)"
                                     isRequired={gstinRequirement === "Registered"}
                                     error={fieldState.error}
@@ -254,7 +251,6 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 <FileInputWrapper 
                                     attachmentName="pan_attachment" 
                                     fieldName="pan_number" 
-                                    isDisabled={isStep1ReadOnly}
                                     label="PAN Number"
                                     isRequired={true}
                                     error={fieldState.error}
@@ -285,7 +281,6 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 <FileInputWrapper 
                                     attachmentName="cin_attachment" 
                                     fieldName="cin_number" 
-                                    isDisabled={isReadOnly || isEmployee}
                                     label="CIN Number"
                                     isRequired={isCinMandatory}
                                     error={fieldState.error}
@@ -342,7 +337,6 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 <FileInputWrapper 
                                     attachmentName="pan_aadhar_linkage_attachment" 
                                     fieldName="pan_aadhar_linked_status" 
-                                    isDisabled={isReadOnly || isEmployee}
                                     label="PAN Aadhar Linked Status"
                                     isRequired={true}
                                     error={fieldState.error}
@@ -372,7 +366,6 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 <FileInputWrapper 
                                     attachmentName="msme_attachment" 
                                     fieldName="msme_number" 
-                                    isDisabled={!!(isReadOnly || isNonMsme)}
                                     label="Credit Information Number (MSME)"
                                     isRequired={!isNonMsme}
                                     error={fieldState.error}

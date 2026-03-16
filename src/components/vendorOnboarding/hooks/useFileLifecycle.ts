@@ -65,6 +65,13 @@ export const useFileLifecycle = (externalMethods?: UseFormReturn<VendorFormValue
         orgName: string = FORMDATA_CONFIG.ORG_NAME,
         formName: string = FORMDATA_CONFIG.FORM_NAME
     ) => {
+        // Enforce 2MB limit
+        const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+        if (file.size > MAX_SIZE) {
+            toast.error(`File "${file.name}" exceeds the 2MB limit.`);
+            throw new Error("File too large");
+        }
+
         try {
             const base64 = await fileToBase64(file);
             const { data, error } = await uploadFileApi({

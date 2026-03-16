@@ -57,7 +57,7 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
             header: ({ column }) => (
                 <div
                     onClick={column.getToggleSortingHandler()}
-                    className="flex items-center gap-2 w-fit cursor-pointer py-2 hover:text-primary transition-colors"
+                    className="flex items-center gap-2 w-fit cursor-pointer py-2 pr-8 hover:text-primary transition-colors"
                 >
                     Type of Vendor
                     <ArrowUpDown className="h-3 w-3 opacity-50" />
@@ -66,7 +66,7 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
             cell: ({ row }) => {
                 const shortCode = row.original.form_data?.type_of_vendor;
                 return (
-                    <div className="text-foreground/90 text-[13px] font-medium truncate">
+                    <div className="text-foreground/90 text-[13px] font-medium truncate pr-8">
                         {shortCode ? getVendorTypeFullDescription(shortCode) : "-"}
                     </div>
                 );
@@ -78,14 +78,14 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
             header: ({ column }) => (
                 <div
                     onClick={column.getToggleSortingHandler()}
-                    className="flex items-center gap-2 cursor-pointer py-2 hover:text-primary transition-colors"
+                    className="flex items-center gap-2 cursor-pointer py-2 pr-8 hover:text-primary transition-colors"
                 >
                     Vendor Group
                     <ArrowUpDown className="h-3 w-3 opacity-50" />
                 </div>
             ),
             cell: ({ row }) => (
-                <div className="text-foreground/80 text-[13px] truncate">
+                <div className="text-foreground/80 text-[13px] truncate pr-8">
                     {row.original.form_data?.vendor_details?.vendor_account_group || "-"}
                 </div>
             ),
@@ -96,14 +96,14 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
             header: ({ column }) => (
                 <div
                     onClick={column.getToggleSortingHandler()}
-                    className="flex items-center gap-2 cursor-pointer py-2 hover:text-primary transition-colors"
+                    className="flex items-center gap-2 cursor-pointer py-2 pr-8 hover:text-primary transition-colors"
                 >
                     Vendor Name
                     <ArrowUpDown className="h-3 w-3 opacity-50" />
                 </div>
             ),
             cell: ({ row }) => (
-                <div className="text-foreground text-[13px] font-semibold truncate px-1">
+                <div className="text-foreground text-[13px] font-semibold truncate px-4">
                     {row.original.form_data?.vendor_details?.name1 || "-"}
                 </div>
             ),
@@ -113,14 +113,14 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
             header: ({ column }) => (
                 <div
                     onClick={column.getToggleSortingHandler()}
-                    className="flex items-center gap-2 cursor-pointer py-2 hover:text-primary transition-colors"
+                    className="flex items-center gap-2 cursor-pointer py-2 pr-8 hover:text-primary transition-colors"
                 >
                     GSTIN
                     <ArrowUpDown className="h-3 w-3 opacity-50" />
                 </div>
             ),
             cell: ({ row }) => (
-                <div className="text-foreground/80 text-[13px] font-mono truncate">
+                <div className="text-foreground/80 text-[13px] font-mono truncate pr-8">
                     {row.original.form_data?.key_details?.gstin || "-"}
                 </div>
             ),
@@ -130,14 +130,14 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
             header: ({ column }) => (
                 <div
                     onClick={column.getToggleSortingHandler()}
-                    className="flex items-center gap-2 cursor-pointer py-2 hover:text-primary transition-colors"
+                    className="flex items-center gap-2 cursor-pointer py-2 pr-8 hover:text-primary transition-colors"
                 >
                     PAN
                     <ArrowUpDown className="h-3 w-3 opacity-50" />
                 </div>
             ),
             cell: ({ row }) => (
-                <div className="text-foreground/80 text-[13px] font-mono tracking-wider">
+                <div className="text-foreground/80 text-[13px] font-mono tracking-wider pr-8">
                     {row.original.form_data?.key_details?.pan_number || "-"}
                 </div>
             ),
@@ -147,7 +147,7 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
             header: ({ column }) => (
                 <div
                     onClick={column.getToggleSortingHandler()}
-                    className="flex items-center gap-2 cursor-pointer py-2 hover:text-primary transition-colors font-medium "
+                    className="flex items-center gap-2 cursor-pointer py-2 pr-8 hover:text-primary transition-colors font-medium "
                 >
                     Status
                     <ArrowUpDown className="h-3 w-3 opacity-50" />
@@ -205,7 +205,7 @@ const generateVendorColumns = (): ColumnDef<VendorData, unknown>[] => {
                     }
                 };
                 return (
-                    <div className="flex justify-start items-center h-full">
+                    <div className="flex justify-start items-center h-full pr-8">
                         {getStatusBadge(status)}
                     </div>
                 );
@@ -223,10 +223,10 @@ export const vendorColumns = (
 
     const actionsColumn: ColumnDef<VendorData, unknown> = {
         id: "actions",
-        header: () => <div className="px-1 font-semibold text-[13px]">Actions</div>,
+        header: () => <div className="px-4 font-semibold text-[13px]">Actions</div>,
         cell: ({ row }) => {
             return (
-                <div className="flex items-center justify-start gap-2">
+                <div className="flex items-center justify-start gap-4 px-4">
                     {row.original.form_status === "Draft" ? (
                         <>
                             <Button
