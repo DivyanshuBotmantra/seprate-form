@@ -53,6 +53,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Vendor Account Group"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isStep1ReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.vendorAccountGroup || []}
@@ -74,6 +75,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Employee Number"
                                 required={isV010}
                                 error={fieldState.error}
+                                isReadOnly={isStep1ReadOnly}
                             >
                                 <Input
                                     placeholder="Enter 4-digit employee number"
@@ -95,6 +97,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Company Code"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.companyCode || []}
@@ -116,6 +119,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Title Text"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.titleText || []}
@@ -138,6 +142,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Name 1"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isStep1ReadOnly}
                             >
                                 <Input
                                     placeholder="Enter vendor name"
@@ -158,6 +163,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Name 2"
                                 error={fieldState.error}
                                 helperText="Enter additional name (Optional)"
+                                isReadOnly={isReadOnly}
                             >
                                 <Input
                                     placeholder="Enter additional name (Optional)"
@@ -180,6 +186,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Search Term 1"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input
                                     placeholder="Enter search term"
@@ -201,6 +208,7 @@ const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isRead
                                 label="Terms of Payment Key"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.termsOfPaymentKey || []}

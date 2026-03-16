@@ -80,7 +80,7 @@ const BankDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
         const ifscValue = watch("bank_details.bank_key_ifsc_code");
         
         const isMandatory = isBankMandatory || (!!ifscValue && ifscValue.length >= 11);
-        const showUploadIcon = isMandatory || !!ifscValue;
+        const showUploadIcon = (isMandatory || !!ifscValue) && !isReadOnly;
 
         const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0];
@@ -118,6 +118,7 @@ const BankDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                 error={attachmentError || error}
                 fileName={attachment?.file_name}
                 fileUrl={attachment?.file_url}
+                isReadOnly={isReadOnly}
                 helperText={!attachment?.file_name && showUploadIcon && !isDisabled && !isReadOnly ? 
                     (isMandatory ? "⚓ Bank details document is mandatory" : "📎 File upload optional") : undefined}
             >
@@ -202,6 +203,7 @@ const BankDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Bank Account Number"
                                 required={isChildFieldMandatory}
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                                 helperText={!ifscCode && !isBankMandatory && showWarnings ? "⚠️ Enter IFSC Code first to enable this field" : undefined}
                             >
                                 <FormControl onClick={handleDisabledClick}>
@@ -227,6 +229,7 @@ const BankDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Account Holder Name"
                                 required={isChildFieldMandatory}
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <FormControl onClick={handleDisabledClick}>
                                     <Input 
@@ -249,6 +252,7 @@ const BankDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                         render={({ field }) => (
                             <FormInputWrapper 
                                 label="Bank Country"
+                                isReadOnly={isReadOnly}
                                 helperText="Auto-filled 'IN' for Indian Banking"
                             >
                                 <FormControl>
@@ -271,6 +275,7 @@ const BankDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                         render={({ field }) => (
                             <FormInputWrapper 
                                 label="Partner Bank Type"
+                                isReadOnly={isReadOnly}
                                 helperText="Standard bank type '0000'"
                             >
                                 <FormControl>

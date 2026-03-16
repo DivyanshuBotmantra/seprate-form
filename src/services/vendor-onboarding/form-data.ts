@@ -22,9 +22,9 @@ const getFormAuthToken = async (): Promise<string | null> => {
         const response = await axios.post(`${BASE_URL}/validate_user_admin_api`, payload, {
             headers: COMMON_HEADERS
         });
-        
+
         const token = response.data?.response_body?.authorize_token || response.data?.token;
-        
+
         if (token) {
             sessionStorage.setItem("form_token", token);
             return token;
@@ -45,12 +45,12 @@ const callFormApi = async (endpoint: string, data: any, method: 'post' | 'put' |
         if (!token) {
             token = await getFormAuthToken();
         }
-        
+
         return await formApi.request({
             url: `${BASE_URL}${endpoint}`,
             method: method,
             data: data,
-            headers: { 
+            headers: {
                 ...COMMON_HEADERS,
                 "authorize_token": token || "",
             }
@@ -75,7 +75,7 @@ const callFormApi = async (endpoint: string, data: any, method: 'post' | 'put' |
                 return { data: null, error: retryMessage };
             }
         }
-        
+
         let errorMessage = "Failed to process form data request.";
         if (err instanceof AxiosError) {
             errorMessage = err.response?.data?.error_message || err.message;
@@ -102,5 +102,13 @@ export const deleteFormData = async (data: any): Promise<APIResponse<any>> => {
 
 export const getFormLovs = async (data: { form_name: string; org_name: string }): Promise<APIResponse<any>> => {
     return callFormApi("/get_lov_form_admin_api", data);
+};
+
+export const uploadFileApi = async (data: any): Promise<APIResponse<any>> => {
+    return callFormApi("/upload_file_api", data, "post");
+};
+
+export const deleteFileApi = async (data: any): Promise<APIResponse<any>> => {
+    return callFormApi("/delete_file_api", data, "delete");
 };
 

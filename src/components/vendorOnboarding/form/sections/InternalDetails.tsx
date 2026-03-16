@@ -113,6 +113,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     label="Reconciliation Account in General Ledger"
                                     required
                                     error={fieldState.error}
+                                    isReadOnly={isReadOnly}
                                 >
                                     {hasMapping ? (
                                         <FormControl>
@@ -147,6 +148,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="Planning Group"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <FormControl>
                                     <Input 
@@ -168,6 +170,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="Indicator for with Holding Tax Type 1"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.indicatorForWithHoldingTaxType1 || []}
@@ -188,6 +191,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="Indicator for with Holding Tax Type 2"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.indicatorForWithHoldingTaxType2 || []}
@@ -210,6 +214,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Purchasing Organization"
                                 required={isXK01}
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <FormControl>
                                     <Input 
@@ -231,6 +236,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Purchase Order Currency"
                                 required={isXK01}
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.purchaseOrderCurrency || []}
@@ -252,6 +258,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="Responsible Sales Person at Vendor Office"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <FormControl>
                                     <Input 
@@ -274,6 +281,7 @@ const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Order Acknowledgment Requirement"
                                 required={isXK01}
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <FormControl>
                                     <RadioGroup

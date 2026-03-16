@@ -32,6 +32,7 @@ const TypeOfVendor = ({ isReadOnly }: TypeOfVendorProps) => {
                             label="Select Vendor Category"
                             required
                             error={fieldState.error}
+                            isReadOnly={isReadOnly}
                         >
                             <FormControl>
                                 <RadioGroup

@@ -2,9 +2,11 @@ import { useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Upload, X, FileText, CheckCircle2, Loader2 } from "lucide-react";
+import { Upload, FileText, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from 'sonner';
 import FormInputWrapper from '../FormInputWrapper';
+
+import { useFileLifecycle } from '../../hooks/useFileLifecycle';
 
 interface FormFileFieldProps {
     name: string;
@@ -13,12 +15,14 @@ interface FormFileFieldProps {
     required?: boolean;
     accept?: string;
     disabled?: boolean;
+    isReadOnly?: boolean;
 }
 
-export const FormFileField = ({ name, label, description, required, accept = ".pdf,.jpg,.jpeg,.png", disabled = false }: FormFileFieldProps) => {
-    const { control, setValue, watch } = useFormContext();
+export const FormFileField = ({ name, label, description, required, accept = ".pdf,.jpg,.jpeg,.png", disabled = false, isReadOnly = false }: FormFileFieldProps) => {
+    const { control, watch } = useFormContext();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const fileData = watch(name);
+    const { uploadSingleFile, markForDeletion } = useFileLifecycle();
     const [isUploading, setIsUploading] = useState(false);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,19 +31,11 @@ export const FormFileField = ({ name, label, description, required, accept = ".p
 
         setIsUploading(true);
         try {
-            // Mock upload logic
-            await new Promise(resolve => setTimeout(resolve, 800));
-            const mockUrl = URL.createObjectURL(file);
-            
-            setValue(name, {
-                file_name: file.name,
-                file_type: file.type,
-                file_url: mockUrl,
-            }, { shouldValidate: true });
-            
+            const attachmentKey = name.split('.').pop() || "";
+            await uploadSingleFile(file, attachmentKey);
             toast.success(`${label} attached!`);
         } catch (error) {
-            toast.error("Failed to attach file");
+            // Error handled in hook
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = "";
@@ -47,8 +43,8 @@ export const FormFileField = ({ name, label, description, required, accept = ".p
     };
 
     const removeFile = () => {
-        setValue(name, null, { shouldValidate: true });
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        const attachmentKey = name.split('.').pop() || "";
+        markForDeletion(attachmentKey);
     };
 
     return (
@@ -60,9 +56,11 @@ export const FormFileField = ({ name, label, description, required, accept = ".p
                     label={label}
                     required={required}
                     error={fieldState.error}
-                    helperText={description}
+                    helperText={isReadOnly ? undefined : description}
                     fileName={fileData?.file_name}
                     fileUrl={fileData?.file_url}
+                    isReadOnly={isReadOnly}
+                    onRemoveFile={removeFile}
                 >
                     <FormControl>
                         <div className="relative w-full">
@@ -74,7 +72,7 @@ export const FormFileField = ({ name, label, description, required, accept = ".p
                                 onChange={handleFileChange}
                             />
                             
-                            {!fileData?.file_name ? (
+                            {!fileData?.file_name && !isReadOnly && (
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -85,33 +83,25 @@ export const FormFileField = ({ name, label, description, required, accept = ".p
                                     {isUploading ? (
                                         <Loader2 className="h-4 w-4 animate-spin text-primary" />
                                     ) : (
-                                        <Upload className={`h-4 w-4 ${disabled ? "text-muted-foreground/50" : "text-primary/70"}`} />
+                                        <Upload className={`h-4 w-4 ${disabled ? "text-muted-foreground/50" : "text-[#C53929]"}`} />
                                     )}
                                     <span className="text-[13px] font-semibold text-foreground/70">
                                         {isUploading ? "Uploading..." : "Click to upload"}
                                     </span>
                                 </Button>
-                            ) : (
-                                <div className="flex items-center justify-between h-10 px-3 border rounded-lg bg-primary/5 border-primary/20">
-                                    <div className="flex items-center gap-2 overflow-hidden">
-                                        <FileText className="h-4 w-4 text-primary shrink-0" />
-                                        <span className="text-[12px] font-bold truncate max-w-[120px] md:max-w-[180px]">
+                            )}
+                            
+                            {fileData?.file_name && (
+                                <div className="flex items-center justify-between h-10 px-3 border rounded-lg bg-muted/20 border-border/50">
+                                    <div className="flex items-center gap-2 overflow-hidden pointer-events-none">
+                                        <FileText className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                                        <span className="text-[12px] font-medium text-muted-foreground truncate italic">
                                             {fileData.file_name}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                                        {!disabled && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                                                onClick={removeFile}
-                                            >
-                                                <X className="h-3.5 w-3.5" />
-                                            </Button>
-                                        )}
+                                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 opacity-50" />
+                                        {/* Delete button handled by FormInputWrapper */}
                                     </div>
                                 </div>
                             )}

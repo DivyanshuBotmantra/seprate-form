@@ -34,7 +34,8 @@ export const prepareUpdatePayload = (
     status: "Submitted" | "Draft",
     transId: string,
     userId: string,
-    formId: string
+    formId: string,
+    updatedAttachmentFields: string[] = []
 ) => {
     const istTimestamp = getISTTimestamp();
 
@@ -151,7 +152,7 @@ export const prepareUpdatePayload = (
             form_status: status,
             updated_by: userId,
             form_data: completeFormData,
-            updated_attachment_fields: [] 
+            updated_attachment_fields: updatedAttachmentFields 
         },
         trans_history_flag: false,
         trans_data_flag: false,

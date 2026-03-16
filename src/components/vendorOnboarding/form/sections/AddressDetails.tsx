@@ -80,6 +80,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Street"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter Street Address" 
@@ -101,6 +102,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Street 2"
                                 error={fieldState.error}
                                 helperText="Enter Street 2 (Optional)"
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter Street 2 (Optional)" 
@@ -123,6 +125,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Street 3"
                                 error={fieldState.error}
                                 helperText="Enter Street 3 (Optional)"
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter Street 3 (Optional)" 
@@ -144,6 +147,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Street 4"
                                 error={fieldState.error}
                                 helperText="Enter Street 4 (Optional)"
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter Street 4 (Optional)" 
@@ -166,6 +170,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="Street 5"
                                 error={fieldState.error}
                                 helperText="Enter Street 5 (Optional)"
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter Street 5 (Optional)" 
@@ -187,6 +192,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="District"
                                 error={fieldState.error}
                                 helperText="Enter District (Optional)"
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter District (Optional)" 
@@ -209,6 +215,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="City Postal Code"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder={!isForeign ? "Enter 6-digit Postal Code" : "Enter Postal Code"} 
@@ -230,6 +237,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                 label="City"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter City" 
@@ -261,6 +269,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     label="Country Key"
                                     required
                                     error={fieldState.error}
+                                    isReadOnly={isReadOnly}
                                 >
                                     <SearchableSelect
                                         options={lovData?.countryOptions || []}
@@ -297,6 +306,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                                     label="Region"
                                     required
                                     error={fieldState.error}
+                                    isReadOnly={isReadOnly}
                                 >
                                     {showAsInput ? (
                                         <FormControl>
@@ -332,6 +342,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="First Mobile No"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter 10-digit mobile number" 
@@ -352,6 +363,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="First Telephone"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter 10-digit telephone number" 
@@ -373,6 +385,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="Telephone Dailing"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter 10-digit telephone number" 
@@ -397,6 +410,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="Primary Email"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter primary email address" 
@@ -416,6 +430,7 @@ const AddressDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {
                             <FormInputWrapper 
                                 label="Secondary Email"
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <Input 
                                     placeholder="Enter secondary email address" 

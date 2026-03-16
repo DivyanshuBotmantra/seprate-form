@@ -4,11 +4,12 @@ import { FormField, FormControl } from "@/components/ui/form";
 import FormInputWrapper from "../FormInputWrapper";
 import { Input } from "@/components/ui/input";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import { toast } from "sonner";
 import SearchableSelect from "@/components/common/search-select";
+import { useFileLifecycle } from "../../hooks/useFileLifecycle";
 
 // Validation helper logic derived from KeyDetailsSection.tsx
 const validatePAN = (pan: string) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan);
@@ -42,6 +43,7 @@ const shouldShowFileUpload = (value: string): boolean => {
 const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnly?: boolean; isStep1ReadOnly?: boolean }) => {
     const { control, watch, setValue } = useFormContext<VendorFormValues>();
     const { lovData } = useLOVData();
+    const { uploadSingleFile, markForDeletion } = useFileLifecycle();
     
     // Watch relevant fields for logic
     const panNumber = watch("key_details.pan_number");
@@ -140,7 +142,7 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
         const fieldValue = watch(`key_details.${fieldName}` as any) || "";
 
         const isMandatory = isFileUploadMandatory(fieldName, fieldValue, panNumber);
-        const showUploadIcon = shouldShowFileUpload(fieldValue);
+        const showUploadIcon = shouldShowFileUpload(fieldValue) && !isReadOnly;
 
         const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0];
@@ -148,19 +150,11 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
 
             setIsUploading(true);
             try {
-                // Mock upload
-                await new Promise(resolve => setTimeout(resolve, 800));
-                const mockUrl = URL.createObjectURL(file);
-                
-                setValue(`attachments.${attachmentName}` as any, {
-                    file_name: file.name,
-                    file_type: file.type,
-                    file_url: mockUrl,
-                }, { shouldValidate: true });
-                
+                // Real upload
+                await uploadSingleFile(file, attachmentName as string);
                 toast.success("File attached successfully");
             } catch (error) {
-                toast.error("Upload failed");
+                // Error already handled in hook
             } finally {
                 setIsUploading(false);
                 if (fileInputRef.current) fileInputRef.current.value = "";
@@ -168,7 +162,7 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
         };
 
         const removeFile = () => {
-            setValue(`attachments.${attachmentName}` as any, null, { shouldValidate: true });
+            markForDeletion(attachmentName as string);
         };
 
         return (
@@ -178,6 +172,8 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                 error={attachmentError || error}
                 fileName={attachment?.file_name}
                 fileUrl={attachment?.file_url}
+                onRemoveFile={removeFile}
+                isReadOnly={isReadOnly}
                 helperText={!attachment?.file_name && showUploadIcon && !isDisabled && !isReadOnly ? 
                     (isMandatory ? "⚓ File upload required" : "📎 File upload optional") : undefined}
             >
@@ -198,18 +194,13 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 <Upload 
                                     className={`h-4 w-4 cursor-pointer transition-colors ${
                                         isDisabled ? "opacity-30 cursor-not-allowed" : 
-                                        isMandatory && !attachment?.file_name ? "text-red-500 hover:text-red-600" : "text-primary hover:text-primary/80"
+                                        "text-[#C53929] hover:text-[#A62D1F]"
                                     }`}
                                     onClick={() => !isDisabled && fileInputRef.current?.click()}
                                 />
                             )
                         )}
-                        {attachment?.file_name && !isReadOnly && !isDisabled && (
-                            <X 
-                                className="h-3.5 w-3.5 cursor-pointer text-red-500 hover:text-red-600 transition-colors ml-1" 
-                                onClick={removeFile}
-                            />
-                        )}
+                        {/* The X button is now handled by FormInputWrapper below the input */}
                     </div>
                 </div>
             </FormInputWrapper>
@@ -324,6 +315,7 @@ const KeyDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnl
                                 label="MSME Status"
                                 required
                                 error={fieldState.error}
+                                isReadOnly={isReadOnly}
                             >
                                 <SearchableSelect
                                     options={lovData?.reMSMEStatus || []}
