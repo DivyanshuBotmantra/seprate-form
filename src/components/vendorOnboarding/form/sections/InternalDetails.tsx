@@ -13,7 +13,7 @@ import {
     hasMappedReconciliationAccount,
     getPlanningGroupFromVendorAccountGroup,
     getReceiptTypeFromWithholdingTax
-} from "@/components/vendor/lov-utils";
+} from "@/components/vendorOnboarding/utils/lov-utils";
 import SearchableSelect from "@/components/common/search-select";
 
 const InternalDetails = ({ isReadOnly = false }: { isReadOnly?: boolean }) => {

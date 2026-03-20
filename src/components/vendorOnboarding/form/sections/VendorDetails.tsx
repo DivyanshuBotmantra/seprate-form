@@ -6,7 +6,7 @@ import { useFormContext } from "react-hook-form";
 import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import { useEffect } from "react";
-import { getPlanningGroupFromVendorAccountGroup } from "@/components/vendor/lov-utils";
+import { getPlanningGroupFromVendorAccountGroup } from "@/components/vendorOnboarding/utils/lov-utils";
 import SearchableSelect from "@/components/common/search-select";
 
 const VendorDetails = ({ isReadOnly = false, isStep1ReadOnly = false }: { isReadOnly?: boolean; isStep1ReadOnly?: boolean }) => {

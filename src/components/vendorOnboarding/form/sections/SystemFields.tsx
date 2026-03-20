@@ -14,7 +14,7 @@ import {
     calculateServiceBasedInvoiceVerification,
     calculateGroupForCalculationSchema,
     calculateConfirmationControlKey
-} from "@/components/vendor/lov-utils";
+} from "@/components/vendorOnboarding/utils/lov-utils";
 
 import FormInputWrapper from "../FormInputWrapper";
 

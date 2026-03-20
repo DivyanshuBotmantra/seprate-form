@@ -12,8 +12,8 @@ import { createFormData, getFormLovs } from "@/services/vendor-onboarding/form-d
 import { Loader2, ChevronLeft } from "lucide-react";
 import { FIELD_DEPENDENCIES, createInitialDraftPayload, REGEX, FORMDATA_CONFIG } from "../../components/vendorOnboarding/form/config";
 import FormInputWrapper from "../../components/vendorOnboarding/form/FormInputWrapper";
-import { mapAPILOVToDropdown } from "@/components/vendor/lov-utils";
-import type { LOVData } from "@/components/vendor/types";
+import { mapAPILOVToDropdown } from "@/components/vendorOnboarding/utils/lov-utils";
+import type { LOVData } from "@/components/vendorOnboarding/utils/types";
 import SearchableSelect from "@/components/common/search-select";
 
 const step1Schema = z.object({

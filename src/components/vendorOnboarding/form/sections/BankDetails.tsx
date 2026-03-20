@@ -6,7 +6,7 @@ import type { VendorFormValues } from "../schema";
 import { useLOVData } from "../LOVContext";
 import FormInputWrapper from "../FormInputWrapper";
 import { useEffect, useState, useRef } from "react";
-import { isBankDetailsMandatory } from "@/components/vendor/lov-utils";
+import { isBankDetailsMandatory } from "@/components/vendorOnboarding/utils/lov-utils";
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
