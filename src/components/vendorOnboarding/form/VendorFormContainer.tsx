@@ -9,9 +9,12 @@ import { Loader2, Save, Send, ChevronLeft } from "lucide-react";
 
 import { vendorFormSchema, type VendorFormValues } from "./schema";
 import { VENDOR_FORM_DEFAULTS, FORMDATA_CONFIG } from "./config";
-import { getFormData, updateFormData } from "@/services/vendor-onboarding/form-data";
+import { getFormData, updateFormData, deleteFormData } from "@/services/vendor-onboarding/form-data";
 import { useVendorDataLoader } from "../hooks/useVendorDataLoader";
 import { prepareUpdatePayload } from "./mapper";
+import { addDays, isAfter, startOfToday } from "date-fns";
+import DraftExpiryBadge from "./DraftExpiryBadge";
+import DraftExpiredDialog from "./DraftExpiredDialog";
 
 import TypeOfVendor from "./sections/TypeOfVendor";
 import VendorDetails from "./sections/VendorDetails";
@@ -88,6 +91,14 @@ const FormContent = ({ transId }: { transId: string | null }) => {
     const [loading, setLoading] = useState(!!transId);
     const [metadata, setMetadata] = useState<VendorMetadata | null>(null);
     const [formId, setFormId] = useState<string>("");
+    const [showExpiredDialog, setShowExpiredDialog] = useState(false);
+
+    const isDraft = metadata?.formStatus?.toLowerCase() === "draft";
+    const createdDate = metadata?.createdOn ? new Date(metadata.createdOn) : null;
+    const expiryDate = createdDate ? addDays(createdDate, 30) : null;
+    const isExpired = expiryDate ? isAfter(startOfToday(), expiryDate) : false;
+
+    const isActuallyReadOnly = mode === "view" || (isDraft && isExpired);
 
     const {
         processPhysicalDeletions,
@@ -121,7 +132,8 @@ const FormContent = ({ transId }: { transId: string | null }) => {
                     const record = data.response_body[0];
                     setFormId(record.id || record.trans_id || "");
                     reset(record.form_data);
-                    setMetadata({
+                    
+                    const meta = {
                         transactionId: record.trans_id,
                         formStatus: record.form_status,
                         createdBy: record.created_by,
@@ -130,7 +142,17 @@ const FormContent = ({ transId }: { transId: string | null }) => {
                         updatedOn: record.updated_on,
                         submittedBy: record.form_submitted_by || record.form_data?.form_submitted_by,
                         submittedOn: record.form_submitted_on || record.form_data?.form_submitted_on,
-                    });
+                    };
+                    setMetadata(meta);
+
+                    // Check for expiry if it's a draft
+                    if (record.form_status?.toLowerCase() === "draft" && record.created_on) {
+                        const cDate = new Date(record.created_on);
+                        const eDate = addDays(cDate, 30);
+                        if (isAfter(startOfToday(), eDate)) {
+                            setShowExpiredDialog(true);
+                        }
+                    }
                 } else if (error) {
                     toast.error("Failed to load vendor data");
                 }
@@ -139,6 +161,29 @@ const FormContent = ({ transId }: { transId: string | null }) => {
             loadData();
         }
     }, [transId, reset]);
+
+    const handleCreateNew = () => {
+        navigate("/vendor-onboarding"); // Navigate to list to create new or direct to new form if route known
+        setShowExpiredDialog(false);
+    };
+
+    const handleDeleteDraft = async () => {
+        if (!transId) return;
+        
+        const { error } = await deleteFormData({
+            org_name: FORMDATA_CONFIG.ORG_NAME,
+            form_name: FORMDATA_CONFIG.FORM_NAME,
+            trans_id: transId
+        });
+
+        if (error) {
+            toast.error(`Failed to delete draft: ${error}`);
+        } else {
+            toast.success("Draft deleted successfully");
+            navigate("/vendor-onboarding");
+        }
+        setShowExpiredDialog(false);
+    };
 
     const onSubmit = async (values: VendorFormValues, status: "Submitted" | "Draft" = "Submitted") => {
         try {
@@ -201,7 +246,7 @@ const FormContent = ({ transId }: { transId: string | null }) => {
                             </div>
                             <div>
                                 <h1 className="text-lg text-muted font-semibold uppercase tracking-wider">
-                                    VENDOR ONBOARDING FORM {mode === "view" ? "- VIEW MODE" : ""}
+                                    VENDOR ONBOARDING FORM {isActuallyReadOnly ? "- VIEW MODE" : ""}
                                 </h1>
                                 {mode === "view" && metadata && (
                                     <p className="text-[11px] text-muted opacity-80 font-medium -mt-1">
@@ -212,7 +257,10 @@ const FormContent = ({ transId }: { transId: string | null }) => {
                         </div>
 
                         <div className="flex items-center gap-3">
-                            {mode === "view" ? (
+                            {isDraft && metadata?.createdOn && (
+                                <DraftExpiryBadge createdOn={metadata.createdOn} />
+                            )}
+                            {isActuallyReadOnly ? (
                                 <div className="text-white/80 text-[13px] font-bold bg-white/10 px-3 py-1 rounded-md border border-white/20 flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                                     READ ONLY
@@ -294,24 +342,31 @@ const FormContent = ({ transId }: { transId: string | null }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar bg-sidebar">
                     <div className="p-4 md:p-6 pb-8">
                         <div className="max-w-7xl mx-auto space-y-6 mb-2">
-                            <Card><TypeOfVendor isReadOnly={mode === "view" || !!transId} /></Card>
-                            <Card><VendorDetails isReadOnly={mode === "view"} isStep1ReadOnly={mode === "view" || !!transId} /></Card>
-                            <Card><KeyDetails isReadOnly={mode === "view"} isStep1ReadOnly={mode === "view" || !!transId} /></Card>
-                            <Card><AddressDetails isReadOnly={mode === "view"} /></Card>
-                            <Card><BankDetails isReadOnly={mode === "view"} /></Card>
-                            <Card><InternalDetails isReadOnly={mode === "view"} /></Card>
-                            <Card><SystemFields isReadOnly={mode === "view"} /></Card>
+                            <Card><TypeOfVendor isReadOnly={isActuallyReadOnly || !!transId} /></Card>
+                            <Card><VendorDetails isReadOnly={isActuallyReadOnly} isStep1ReadOnly={isActuallyReadOnly || !!transId} /></Card>
+                            <Card><KeyDetails isReadOnly={isActuallyReadOnly} isStep1ReadOnly={isActuallyReadOnly || !!transId} /></Card>
+                            <Card><AddressDetails isReadOnly={isActuallyReadOnly} /></Card>
+                            <Card><BankDetails isReadOnly={isActuallyReadOnly} /></Card>
+                            <Card><InternalDetails isReadOnly={isActuallyReadOnly} /></Card>
+                            <Card><SystemFields isReadOnly={isActuallyReadOnly} /></Card>
 
-                            {mode === "view" ? (
+                            {isActuallyReadOnly ? (
                                 <ViewModeAttachments attachments={getValues("attachments") as any} />
                             ) : (
                                 mode !== "edit" && (
-                                    <Card><Attachments isReadOnly={mode === "view"} /></Card>
+                                    <Card><Attachments isReadOnly={isActuallyReadOnly} /></Card>
                                 )
                             )}
                         </div>
                     </div>
                 </div>
+
+                <DraftExpiredDialog 
+                    open={showExpiredDialog} 
+                    onCreateNew={handleCreateNew}
+                    onDelete={handleDeleteDraft}
+                    onCancel={() => setShowExpiredDialog(false)}
+                />
             </div>
         </div>
     );

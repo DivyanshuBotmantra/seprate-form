@@ -107,6 +107,7 @@ export const useFileLifecycle = (externalMethods?: UseFormReturn<VendorFormValue
     /**
      * Adds a file to the deletion buffer and removes from form state
      */
+    
     const markForDeletion = (attachmentName: string) => {
         const currentFile = getValues(`attachments.${attachmentName as any}` as any);
         if (currentFile && currentFile.file_url) {
