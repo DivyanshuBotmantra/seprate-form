@@ -3,7 +3,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import type { VendorFormValues } from '../form/schema';
 import { FIELD_DEPENDENCIES } from '../form/config';
 import { useLOVData } from '../form/LOVContext';
-import { getPlanningGroupFromAccountGroup, getReceiptTypeForWithholdingTax } from '../utils/lov-utils';
+import { getPlanningGroupFromVendorAccountGroup, getReceiptTypeFromWithholdingTax } from '../utils/lov-utils';
 
 /**
  * Hook to handle automatic field updates based on other field changes.
@@ -29,8 +29,8 @@ export const useFormDependencies = () => {
     const accountGroup = useWatch({ control, name: 'vendor_details.vendor_account_group' });
     useEffect(() => {
         if (accountGroup && lovData?.vendorAccPlanningGroup) {
-            const autoPlanningGroup = getPlanningGroupFromAccountGroup(
-                accountGroup, 
+            const autoPlanningGroup = getPlanningGroupFromVendorAccountGroup(
+                accountGroup,
                 lovData.vendorAccPlanningGroup
             );
             if (autoPlanningGroup) {
@@ -45,14 +45,14 @@ export const useFormDependencies = () => {
 
     useEffect(() => {
         if (taxType1 && lovData?.receiptType1) {
-            const receipt = getReceiptTypeForWithholdingTax(taxType1, lovData.receiptType1);
+            const receipt = getReceiptTypeFromWithholdingTax(taxType1, lovData.receiptType1);
             setValue('internal_details.receipt_type1', receipt);
         }
     }, [taxType1, lovData, setValue]);
 
     useEffect(() => {
         if (taxType2 && lovData?.receiptType2) {
-            const receipt = getReceiptTypeForWithholdingTax(taxType2, lovData.receiptType2);
+            const receipt = getReceiptTypeFromWithholdingTax(taxType2, lovData.receiptType2);
             setValue('internal_details.receipt_type2', receipt);
         }
     }, [taxType2, lovData, setValue]);

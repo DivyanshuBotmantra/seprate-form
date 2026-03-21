@@ -7,7 +7,7 @@ import {
     calculateServiceBasedInvoiceVerification, 
     calculateGroupForCalculationSchema, 
     calculateConfirmationControlKey 
-} from "@/components/vendor/validation";
+} from "@/components/vendorOnboarding/utils/lov-utils";
 
 /**
  * Utility to get current timestamp in IST (UTC+5:30)
